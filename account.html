@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Account | Gawang Liliw</title>
+    <link rel="stylesheet" href="account.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <script type="module" src="account.js" defer></script>
+    <script type="module" src="firebase-auth.js" defer></script>
+    <script type="module" src="firebase-config.js" defer></script>
+</head>
+<body>
+    <!-- Hamburger Menu Toggle -->
+    <button class="hamburger" aria-label="Toggle navigation">
+        <i class="fas fa-bars"></i>
+    </button>
+
+    <!-- Sidebar for Navigation -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <h2>Welcome back, <br><span id="userName">User</span>!</h2>
+            <div class="sidebar-profile-picture">
+                <img id="sidebar-profile-picture" src="static/photos/default-profile.png" >
+                <div id="followerCount" style="margin-top: 8px; text-align: center; font-weight: bold; color: #555;">
+                    Followers: -
+                </div>
+            </div>
+        </div>
+        <nav>
+            <a href="staff-dashboard.html"><i class='bx bxs-dashboard'></i> Dashboard</a>
+            <div class="menu-item">
+                <a href="product.html" class="has-submenu">
+                  <i class='bx bx-package'></i> Product
+                  <i class='bx bx-chevron-down'></i>
+                </a>
+                <ul class="submenu">
+                  <li><a href="product-promo.html"><i class='bx bx-purchase-tag'></i> Product Promo</a></li>
+                  <li><a href="product-reviews.html"><i class='bx bx-star'></i> Product Reviews</a></li>
+                </ul>
+              </div>
+            <a href="transaction.html"><i class='bx bx-money'></i> Transaction</a>
+            <a href="message.html"><i class='bx bx-wallet'></i> Message</a>
+            <a href="account.html" class="active"><i class='bx bx-user'></i> Account</a>
+            <a href="index.html" id="logoutButton"><i class='bx bx-log-out'></i> Log Out</a>
+        </nav>
+    </div>
+    
+    <!-- Main Content -->
+    <main>
+        <div class="container">
+            <header class="top-bar">
+                <div class="account-title">
+                    <i class="fas fa-user-circle"></i>
+                    <div>
+                        <h1>My Account</h1>
+                        <div class="verified-badge">
+                            <i class="fas fa-check-circle"></i>
+                            <span>Verified Account</span>
+                        </div>
+                    </div>
+                </header>
+
+            <div class="dashboard-grid">
+                <!-- Personal Information Card -->
+                <div class="card" id="personal-info-card">
+                    <div class="card-header">
+                        <div class="card-title">
+                            <i class="fas fa-user"></i>
+                            <h2>Personal Information</h2>
+                        </div>
+                        <button class="btn btn-icon edit-btn" id="edit-personal-info">
+                            <i class="fas fa-edit"></i>
+                            <span>Edit</span>
+                        </button>
+                    </div>
+                    <div class="card-body">
+                        <div class="profile-section">
+                            <div class="profile-picture-container">
+                                <div class="profile-picture" id="profile-picture">
+                                    <i class="fas fa-user"></i>
+                                </div>
+                                <div class="profile-picture-overlay" id="upload-trigger">
+                                    <i class="fas fa-camera"></i>
+                                    <span>Change</span>
+                                </div>
+                            </div>
+                            <div class="banner-container">
+                                <div class="banner-image" id="banner-image">
+                                    <img src="static/photos/default-banner.png">
+                                </div>
+                                <div class="banner-overlay" id="banner-upload-trigger">
+                                    <i class="fas fa-camera"></i>
+                                    <span>Change Banner</span>
+                                </div>
+                                <input type="file" id="banner-upload" accept="image/*" hidden>
+                            </div>
+                            <div class="profile-details">
+                                <div class="form-group">
+                                    <label>Shop Name</label>
+                                    <div class="input-container">
+                                        <input type="text" id="shop-name" value="-" disabled>
+                                        <i class="fas fa-shop"></i>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label>Email</label>
+                                    <div class="input-container">
+                                        <input type="email" id="email" value="-" disabled>
+                                        <i class="fas fa-envelope"></i>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label>Phone</label>
+                                    <div class="input-container">
+                                        <input type="tel" id="phone" value="-" disabled>
+                                        <i class="fas fa-phone"></i>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label>Street/House Number (Optional)</label>
+                                    <div class="input-container">
+                                        <input type="text" id="street" placeholder="Enter street or house number" disabled>
+                                        <i class="fas fa-home"></i>
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label>Province</label>
+                                        <div class="input-container">
+                                            <input type="text" id="province" value="Laguna" disabled>
+                                            <i class="fas fa-map-marker-alt"></i>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Municipality</label>
+                                        <div class="input-container">
+                                            <input type="text" id="municipality" value="Liliw" disabled>
+                                            <i class="fas fa-map-marker-alt"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label>Barangay</label>
+                                    <div class="select-container">
+                                        <select id="barangay" disabled>
+                                            <option value="" disabled selected>Select Barangay</option>
+                                            <option value="Bagong Anyo">Bagong Anyo</option>
+                                            <option value="Bongkol">Bongkol</option>
+                                            <option value="Bubukal">Bubukal</option>
+                                            <option value="Calumpang">Calumpang</option>
+                                            <option value="Dita">Dita</option>
+                                            <option value="Ibabang Palale">Ibabang Palale</option>
+                                            <option value="Ibabang San Roque">Ibabang San Roque</option>
+                                            <option value="Ibabang Sungi">Ibabang Sungi</option>
+                                            <option value="Ibabang Taykin">Ibabang Taykin</option>
+                                            <option value="Ilayang Palale">Ilayang Palale</option>
+                                            <option value="Ilayang San Roque">Ilayang San Roque</option>
+                                            <option value="Ilayang Sungi">Ilayang Sungi</option>
+                                            <option value="Ilayang Taykin">Ilayang Taykin</option>
+                                            <option value="Kanlurang Bukal">Kanlurang Bukal</option>
+                                            <option value="Luquin">Luquin</option>
+                                            <option value="Malinao">Malinao</option>
+                                            <option value="Mojon">Mojon</option>
+                                            <option value="Novaliches">Novaliches</option>
+                                            <option value="Oples">Oples</option>
+                                            <option value="Palayan">Palayan</option>
+                                            <option value="Poblacion">Poblacion</option>
+                                            <option value="Rizal">Rizal</option>
+                                            <option value="San Isidro">San Isidro</option>
+                                            <option value="Silangang Bukal">Silangang Bukal</option>
+                                        </select>
+                                        <i class="fas fa-chevron-down"></i>
+                                    </div>
+                                </div>
+                                <!-- DTI Permit Section -->
+                                <div class="form-group">
+                                    <label>DTI Permit</label>
+                                    <div class="input-container document-container">
+                                        <div class="document-preview" id="dti-permit-preview">
+                                            <i class="fas fa-file-alt"></i>
+                                        </div>
+                                        <button class="btn btn-icon upload-document-btn" id="dti-upload-trigger">
+                                            <i class="fas fa-upload"></i>
+                                            <span>Upload DTI Permit</span>
+                                        </button>
+                                        <input type="file" id="dti-upload" accept="image/*,application/pdf" hidden>
+                                    </div>
+                                </div>
+                                <!-- Mayor's Permit Section -->
+                                <div class="form-group">
+                                    <label>Mayor's Permit</label>
+                                    <div class="input-container document-container">
+                                        <div class="document-preview" id="mayors-permit-preview">
+                                            <i class="fas fa-file-alt"></i>
+                                        </div>
+                                        <button class="btn btn-icon upload-document-btn" id="mayors-upload-trigger">
+                                            <i class="fas fa-upload"></i>
+                                            <span>Upload Mayor's Permit</span>
+                                        </button>
+                                        <input type="file" id="mayors-upload" accept="image/*,application/pdf" hidden>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Profile Settings Card -->
+                <div class="card" id="profile-settings-card">
+                    <div class="card-header">
+                        <div class="card-title">
+                            <i class="fas fa-cog"></i>
+                            <h2>Security & Payment</h2>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="settings-grid">
+                            <div class="settings-card">
+                                <div class="form-group">
+                                    <label for="currentPassword">Current Password</label>
+                                    <div class="password-wrapper">
+                                        <input type="password" id="currentPassword" placeholder="Enter current password" />
+                                        <i class="bx bx-hide toggle-password" onclick="togglePassword('currentPassword')"></i>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="newPassword">New Password</label>
+                                    <div class="password-wrapper">
+                                        <input type="password" id="newPassword" placeholder="Enter new password" />
+                                        <i class="bx bx-hide toggle-password" onclick="togglePassword('newPassword')"></i>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="confirmPassword">Confirm Password</label>
+                                    <div class="password-wrapper">
+                                        <input type="password" id="confirmPassword" placeholder="Confirm new password" />
+                                        <i class="bx bx-hide toggle-password" onclick="togglePassword('confirmPassword')"></i>
+                                    </div>
+                                </div>
+                                <button id="changePasswordBtn" class="save-btn">Update Password</button>
+                            </div>
+                        </div>
+                        <div class="settings-grid">
+                            <div class="settings-card">
+                                <div class="card-header">
+                                    <h3>Payment Methods</h3>
+                                </div>
+                                <div class="payment-methods">
+                                    <div class="payment-method">
+                                        <input type="checkbox" id="gcash" checked /><label for="gcash">GCash</label>
+                                        <button class="edit-btn" onclick="togglePaymentForm('gcash')">Edit</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="paymentForm" style="display: none;">
+                            <div class="form-group">
+                                <label for="paymentNumber">Enter Payment Number</label>
+                                <input type="text" id="paymentNumber" placeholder="Enter number" />
+                            </div>
+                            <div class="form-group">
+                                <label for="qrUpload">Upload QR Code</label>
+                                <input type="file" id="qrUpload" accept="image/*" />
+                                <img id="qrPreview" src="" style="display: none; width: 100px; margin-top: 10px;" />
+                            </div>
+                            <button id="saveQRBtn" class="save-btn">Save</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="toast" id="toast">
+                <div class="toast-icon">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <div class="toast-content">
+                    <p class="toast-message">Changes saved successfully!</p>
+                </div>
+                <button class="toast-close">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+        </div>
+    </main>
+
+    <!-- Modal for adding/editing address -->
+    <div class="modal" id="address-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Add New Address</h3>
+                <button class="btn btn-icon close-modal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>Street/House Number</label>
+                    <input type="text" id="modal-street" placeholder="Enter street or house number">
+                </div>
+                <div class="form-group">
+                    <label>Barangay</label>
+                    <div class="select-container">
+                        <select id="modal-barangay">
+                            <option value="" disabled selected>Select Barangay</option>
+                            <option value="Bagong Anyo">Bagong Anyo</option>
+                            <option value="Bongkol">Bongkol</option>
+                            <option value="Bubukal">Bubukal</option>
+                            <option value="Calumpang">Calumpang</option>
+                            <option value="Dita">Dita</option>
+                            <option value="Ibabang Palale">Ibabang Palale</option>
+                            <option value="Ibabang San Roque">Ibabang San Roque</option>
+                            <option value="Ibabang Sungi">Ibabang Sungi</option>
+                            <option value="Ibabang Taykin">Ibabang Taykin</option>
+                            <option value="Ilayang Palale">Ilayang Palale</option>
+                            <option value="Ilayang San Roque">Ilayang San Roque</option>
+                            <option value="Ilayang Sungi">Ilayang Sungi</option>
+                            <option value="Ilayang Taykin">Ilayang Taykin</option>
+                            <option value="Kanlurang Bukal">Kanlurang Bukal</option>
+                            <option value="Luquin">Luquin</option>
+                            <option value="Malinao">Malinao</option>
+                            <option value="Mojon">Mojon</option>
+                            <option value="Novaliches">Novaliches</option>
+                            <option value="Oples">Oples</option>
+                            <option value="Palayan">Palayan</option>
+                            <option value="Poblacion">Poblacion</option>
+                            <option value="Rizal">Rizal</option>
+                            <option value="San Isidro">San Isidro</option>
+                            <option value="Silangang Bukal">Silangang Bukal</option>
+                        </select>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-outline cancel-btn">Cancel</button>
+                <button class="btn btn-primary save-btn">Save Address</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for full-screen image view -->
+    <div class="modal" id="image-modal">
+        <div class="modal-content full-screen-image-modal">
+            <button class="btn btn-icon close-modal" id="close-image-modal">
+                <i class="fas fa-times"></i>
+            </button>
+            <img id="full-screen-image" src="" alt="Full Screen Image">
+        </div>
+    </div>
+
+    <script>
+        // Mobile menu toggle
+        const menuToggle = document.querySelector('.hamburger');
+        const sidebar = document.querySelector('.sidebar');
+        const main = document.querySelector('main');
+
+        menuToggle.addEventListener('click', () => {
+            sidebar.classList.toggle('active');
+            main.classList.toggle('sidebar-active');
+        });
+
+        // Close sidebar when clicking outside
+        document.addEventListener('click', (e) => {
+            if (window.innerWidth <= 768) {
+                if (!sidebar.contains(e.target) && !menuToggle.contains(e.target)) {
+                    sidebar.classList.remove('active');
+                    main.classList.remove('sidebar-active');
+                }
+            }
+        });
+
+        // Save button feedback
+        const saveButtons = document.querySelectorAll('.save-btn');
+        saveButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const originalText = btn.textContent;
+                btn.textContent = 'Saved!';
+                btn.classList.add('saved');
+                setTimeout(() => {
+                    btn.textContent = originalText;
+                    btn.classList.remove('saved');
+                }, 2000);
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Product Promo Management</title>
+  <link rel="stylesheet" href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="product-promo.css">
+</head>
+<body>
+  <!-- Mobile Navigation Toggle -->
+  <button class="nav-toggle" aria-label="Toggle navigation">
+    <i class="bx bx-menu"></i>
+  </button>
+
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-profile-picture">
+        <img id="sidebar-profile-picture" src="static/photos/default-profile.png" alt="Profile picture">
+        <div id="followerCount" style="margin-top: 8px; text-align: center; font-weight: bold; color: #555;">
+          Followers: -
+        </div>
+      </div>
+    </div>
+    <nav>
+      <a href="staff-dashboard.html"><i class='bx bxs-dashboard'></i> Dashboard</a>
+      <div class="menu-item open">
+        <a href="product.html" class="has-submenu active">
+          <i class='bx bx-package'></i> Product
+          <i class='bx bx-chevron-down'></i>
+        </a>
+        <ul class="submenu">
+          <li><a href="product-promo.html" class="active"><i class='bx bx-purchase-tag'></i> Product Promo</a></li>
+          <li><a href="product-reviews.html"><i class='bx bx-star'></i> Product Reviews</a></li>
+        </ul>
+      </div>
+      <a href="transaction.html"><i class='bx bx-money'></i> Transaction</a>
+      <a href="message.html"><i class='bx bx-wallet'></i> Message</a>
+      <a href="account.html"><i class='bx bx-user'></i> Account </a>
+      <a href="index.html" id="logoutButton"><i class='bx bx-log-out'></i> Log Out</a>
+    </nav>
+  </div>
+
+  <main>
+    <header class="top-bar">
+      <h1>Product Promo Management</h1>
+    </header>
+
+    <div class="container">
+      <!-- Tabs -->
+      <div class="tabs">
+        <button class="tab-btn active" data-view="active">Active Promos</button>
+        <button class="tab-btn" data-view="upcoming">Upcoming Promos</button>
+        <button class="tab-btn" data-view="expired">Expired Promos</button>
+      </div>
+
+      <!-- Create Promo Button -->
+      <div class="promo-header">
+        <div class="search-container">
+          <i class='bx bx-search'></i>
+          <input type="text" id="promoSearch" placeholder="Search products..." aria-label="Search promotions">
+        </div>
+        <button class="btn primary" id="createPromoBtn">
+          <i class="bx bx-plus"></i> Create Promo Campaign
+        </button>
+      </div>
+
+      <!-- Promo Table -->
+      <div class="promo-table-container">
+        <table class="promo-table">
+          <thead>
+            <tr>
+              <th>Product</th>
+              <th>Retail Price</th>
+              <th>Promo Type</th>
+              <th>Discounted Price</th>
+              <th>Status</th>
+              <th>Start Date</th>
+              <th>End Date</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="promoTableBody">
+            <!-- Promo data will be populated here -->
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Pagination -->
+      <div class="pagination">
+        <button class="page-btn prev"><i class="bx bx-chevron-left"></i></button>
+        <button class="page-btn active">1</button>
+        <button class="page-btn">2</button>
+        <button class="page-btn">3</button>
+        <span>...</span>
+        <button class="page-btn">10</button>
+        <button class="page-btn next"><i class="bx bx-chevron-right"></i></button>
+      </div>
+
+      <!-- Create/Edit Promo Modal -->
+      <div id="createPromoModal" class="modal" role="dialog" aria-labelledby="modalTitle" aria-hidden="true">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h2 id="modalTitle"><i class="fas fa-tag"></i> Create Product Promotion</h2>
+            <button class="close-btn" id="closePromoModal" aria-label="Close modal">
+              <i class="fas fa-times"></i>
+            </button>
+          </div>
+          <form id="createPromoForm" aria-describedby="formDescription">
+            <p id="formDescription" class="form-description">
+              Fill out the details below to create or edit a product promotion. All required fields are marked with an asterisk (*).
+            </p>
+            <input type="hidden" id="promoId" name="promoId">
+            <div class="form-grid">
+              <div class="form-group">
+                <label for="promoProduct">Select Product <span class="required">*</span></label>
+                <div class="input-wrapper">
+                  <select id="promoProduct" required aria-describedby="promoProductError">
+                    <option value="">Select a product</option>
+                  </select>
+                  <i class="fas fa-chevron-down select-icon"></i>
+                </div>
+                <span id="promoProductError" class="error-message" role="alert"></span>
+              </div>
+              <div class="form-group">
+                <label for="promoType">Promo Type <span class="required">*</span></label>
+                <div class="input-wrapper">
+                  <select id="promoType" required aria-describedby="promoTypeError">
+                    <option value="percentage">Percentage Discount</option>
+                    <option value="bundle">Buy X for Y (Bundle)</option>
+                  </select>
+                  <i class="fas fa-chevron-down select-icon"></i>
+                </div>
+                <span id="promoTypeError" class="error-message" role="alert"></span>
+              </div>
+              <div class="form-group">
+                <label for="originalPrice">Retail Price (₱)</label>
+                <div class="input-wrapper">
+                  <input type="number" id="originalPrice" readonly aria-describedby="originalPriceInfo">
+                  <i class="fas fa-lock input-icon"></i>
+                </div>
+                <span id="originalPriceInfo" class="info-message">Auto-filled based on selected product.</span>
+              </div>
+              <div id="conditionalFields">
+                <div id="percentageFields">
+                  <div class="form-group">
+                    <label for="discountPercentage">Discount Percentage (%) <span class="required">*</span></label>
+                    <div class="input-wrapper">
+                      <input type="number" id="discountPercentage" name="discountPercentage" min="0" max="100" step="0.1" placeholder="e.g., 25.5" required aria-describedby="discountPercentageError">
+                      <span class="input-suffix">%</span>
+                    </div>
+                    <span id="discountPercentageError" class="error-message" role="alert"></span>
+                  </div>
+                </div>
+                <div id="bundleFields" style="display: none;">
+                  <div class="form-group">
+                    <label for="quantity">Quantity <span class="required">*</span></label>
+                    <div class="input-wrapper">
+                      <input type="number" id="quantity" name="quantity" min="2" step="1" placeholder="e.g., 3" required aria-describedby="quantityError">
+                      <i class="fas fa-hashtag input-icon"></i>
+                    </div>
+                    <span id="quantityError" class="error-message" role="alert"></span>
+                  </div>
+                  <div class="form-group">
+                    <label for="fixedPrice">Fixed Price for Quantity (₱) <span class="required">*</span></label>
+                    <div class="input-wrapper">
+                      <input type="number" id="fixedPrice" name="fixedPrice" min="0.01" step="0.01" placeholder="e.g., 100" required aria-describedby="fixedPriceError">
+                      <span class="input-suffix">₱</span>
+                    </div>
+                    <span id="fixedPriceError" class="error-message" role="alert"></span>
+                  </div>
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="promoPrice">Discounted Price per Unit (₱)</label>
+                <div class="input-wrapper">
+                  <input type="number" id="promoPrice" readonly aria-describedby="promoPriceInfo">
+                  <i class="fas fa-lock input-icon"></i>
+                </div>
+                <span id="promoPriceInfo" class="info-message">Calculated based on promo type.</span>
+              </div>
+              <div class="form-group">
+                <label for="promoStartDate">Start Date <span class="required">*</span></label>
+                <div class="input-wrapper">
+                  <input type="datetime-local" id="promoStartDate" required aria-describedby="promoStartDateError">
+                  <i class="fas fa-calendar-alt input-icon"></i>
+                </div>
+                <span id="promoStartDateError" class="error-message" role="alert"></span>
+              </div>
+              <div class="form-group">
+                <label for="promoEndDate">End Date <span class="required">*</span></label>
+                <div class="input-wrapper">
+                  <input type="datetime-local" id="promoEndDate" required aria-describedby="promoEndDateError">
+                  <i class="fas fa-calendar-alt input-icon"></i>
+                </div>
+                <span id="promoEndDateError" class="error-message" role="alert"></span>
+              </div>
+              <div class="form-group full-width button-group">
+                <button type="button" class="cancel-button" id="cancelPromoForm">Cancel</button>
+                <button type="submit" class="submit-button">
+                  <i class="bx bx-check"></i> Apply Promotion
+                </button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- JS files -->
+  <script type="module" src="firebase-config.js"></script>
+  <script type="module" src="product-promo.js"></script>
+</body>
+</html>

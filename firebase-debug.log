@@ -1,0 +1,119 @@
+[debug] [2025-07-23T18:14:59.559Z] ----------------------------------------------------------------------
+[debug] [2025-07-23T18:14:59.565Z] Command:       C:\Program Files\nodejs\node.exe C:\Users\CHRISTINA\AppData\Roaming\npm\node_modules\firebase-tools\lib\bin\firebase.js init emulators
+[debug] [2025-07-23T18:14:59.566Z] CLI Version:   14.11.1
+[debug] [2025-07-23T18:14:59.566Z] Platform:      win32
+[debug] [2025-07-23T18:14:59.566Z] Node Version:  v20.13.1
+[debug] [2025-07-23T18:14:59.567Z] Time:          Thu Jul 24 2025 00:14:59 GMT+0600 (Kyrgyzstan Time)
+[debug] [2025-07-23T18:14:59.567Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2025-07-23T18:15:00.012Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2025-07-23T18:15:00.013Z] > authorizing via signed-in user (ardezachristinajane993@gmail.com)
+[info] 
+     ######## #### ########  ######## ########     ###     ######  ########
+     ##        ##  ##     ## ##       ##     ##  ##   ##  ##       ##
+     ######    ##  ########  ######   ########  #########  ######  ######
+     ##        ##  ##    ##  ##       ##     ## ##     ##       ## ##
+     ##       #### ##     ## ######## ########  ##     ##  ######  ########
+
+You're about to initialize a Firebase project in this directory:
+
+  C:\Users\CHRISTINA\Gawang_Liliw
+
+Before we get started, keep in mind:
+
+  * You are initializing within an existing Firebase project directory
+
+[info] 
+=== Project Setup
+[info] 
+[info] First, let's associate this project directory with a Firebase project.
+[info] You can create multiple project aliases by running firebase use --add, 
+[info] but for now we'll just set up a default project.
+[info] 
+[debug] [2025-07-23T18:15:17.453Z] Using project from CLI flag: comlog-b733f
+[debug] [2025-07-23T18:15:17.456Z] Checked if tokens are valid: false, expires at: 1716501704178
+[debug] [2025-07-23T18:15:17.457Z] Checked if tokens are valid: false, expires at: 1716501704178
+[debug] [2025-07-23T18:15:17.457Z] > refreshing access token with scopes: []
+[debug] [2025-07-23T18:15:17.461Z] >>> [apiv2][query] POST https://www.googleapis.com/oauth2/v3/token [none]
+[debug] [2025-07-23T18:15:17.462Z] >>> [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2025-07-23T18:15:18.872Z] <<< [apiv2][status] POST https://www.googleapis.com/oauth2/v3/token 400
+[debug] [2025-07-23T18:15:18.873Z] <<< [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2025-07-23T18:15:18.874Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/comlog-b733f [none]
+[debug] [2025-07-23T18:15:19.017Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects/comlog-b733f 401
+[debug] [2025-07-23T18:15:19.017Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects/comlog-b733f {"error":{"code":401,"message":"Request had invalid authentication credentials. Expected OAuth 2 access token, login cookie or other valid authentication credential. See https://developers.google.com/identity/sign-in/web/devconsole-project.","status":"UNAUTHENTICATED"}}
+[debug] [2025-07-23T18:15:19.017Z] Got a 401 Unauthenticated error for a call that required authentication. Refreshing tokens.
+[debug] [2025-07-23T18:15:19.018Z] Checked if tokens are valid: false, expires at: 1716501704178
+[debug] [2025-07-23T18:15:19.018Z] Checked if tokens are valid: false, expires at: 1716501704178
+[debug] [2025-07-23T18:15:19.018Z] > refreshing access token with scopes: []
+[debug] [2025-07-23T18:15:19.019Z] >>> [apiv2][query] POST https://www.googleapis.com/oauth2/v3/token [none]
+[debug] [2025-07-23T18:15:19.019Z] >>> [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2025-07-23T18:15:19.072Z] <<< [apiv2][status] POST https://www.googleapis.com/oauth2/v3/token 400
+[debug] [2025-07-23T18:15:19.073Z] <<< [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2025-07-23T18:15:19.074Z] Request to https://firebase.googleapis.com/v1beta1/projects/comlog-b733f had HTTP Error: 401, Request had invalid authentication credentials. Expected OAuth 2 access token, login cookie or other valid authentication credential. See https://developers.google.com/identity/sign-in/web/devconsole-project.
+[debug] [2025-07-23T18:15:19.076Z] FirebaseError: Request to https://firebase.googleapis.com/v1beta1/projects/comlog-b733f had HTTP Error: 401, Request had invalid authentication credentials. Expected OAuth 2 access token, login cookie or other valid authentication credential. See https://developers.google.com/identity/sign-in/web/devconsole-project.
+    at responseToError (C:\Users\CHRISTINA\AppData\Roaming\npm\node_modules\firebase-tools\lib\responseToError.js:52:12)
+    at RetryOperation._fn (C:\Users\CHRISTINA\AppData\Roaming\npm\node_modules\firebase-tools\lib\apiv2.js:312:77)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+[error] 
+[error] Error: Failed to get Firebase project comlog-b733f. Please make sure the project exists and your account has permission to access it.
+[debug] [2025-09-16T19:06:46.236Z] ----------------------------------------------------------------------
+[debug] [2025-09-16T19:06:46.244Z] Command:       C:\Program Files\nodejs\node.exe C:\Users\CHRISTINA\AppData\Roaming\npm\node_modules\firebase-tools\lib\bin\firebase.js init functions
+[debug] [2025-09-16T19:06:46.246Z] CLI Version:   14.16.0
+[debug] [2025-09-16T19:06:46.246Z] Platform:      win32
+[debug] [2025-09-16T19:06:46.246Z] Node Version:  v20.13.1
+[debug] [2025-09-16T19:06:46.246Z] Time:          Wed Sep 17 2025 01:06:46 GMT+0600 (Kyrgyzstan Time)
+[debug] [2025-09-16T19:06:46.247Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2025-09-16T19:06:46.252Z] >>> [apiv2][query] GET https://firebase-public.firebaseio.com/cli.json [none]
+[debug] [2025-09-16T19:06:46.875Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2025-09-16T19:06:46.876Z] > authorizing via signed-in user (ardezachristinajane993@gmail.com)
+[info] 
+     ######## #### ########  ######## ########     ###     ######  ########
+     ##        ##  ##     ## ##       ##     ##  ##   ##  ##       ##
+     ######    ##  ########  ######   ########  #########  ######  ######
+     ##        ##  ##    ##  ##       ##     ## ##     ##       ## ##
+     ##       #### ##     ## ######## ########  ##     ##  ######  ########
+
+You're about to initialize a Firebase project in this directory:
+
+  C:\Users\CHRISTINA\Downloads\Gawang_Liliw(3)\Gawang_Liliw
+
+Before we get started, keep in mind:
+
+  * You are initializing within an existing Firebase project directory
+
+[debug] [2025-09-16T19:06:48.071Z] <<< [apiv2][status] GET https://firebase-public.firebaseio.com/cli.json 200
+[debug] [2025-09-16T19:06:48.072Z] <<< [apiv2][body] GET https://firebase-public.firebaseio.com/cli.json {"cloudBuildErrorAfter":1594252800000,"cloudBuildWarnAfter":1590019200000,"defaultNode10After":1594252800000,"minVersion":"3.0.5","node8DeploysDisabledAfter":1613390400000,"node8RuntimeDisabledAfter":1615809600000,"node8WarnAfter":1600128000000}
+[info] 
+=== Project Setup
+[info] 
+[info] First, let's associate this project directory with a Firebase project.
+[info] You can create multiple project aliases by running firebase use --add, 
+[info] but for now we'll just set up a default project.
+[info] 
+[debug] [2025-09-16T19:07:05.538Z] Using project from CLI flag: comlog-b733f
+[debug] [2025-09-16T19:07:05.540Z] Checked if tokens are valid: false, expires at: 1716501704178
+[debug] [2025-09-16T19:07:05.540Z] Checked if tokens are valid: false, expires at: 1716501704178
+[debug] [2025-09-16T19:07:05.541Z] > refreshing access token with scopes: []
+[debug] [2025-09-16T19:07:05.544Z] >>> [apiv2][query] POST https://www.googleapis.com/oauth2/v3/token [none]
+[debug] [2025-09-16T19:07:05.544Z] >>> [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2025-09-16T19:07:06.864Z] <<< [apiv2][status] POST https://www.googleapis.com/oauth2/v3/token 400
+[debug] [2025-09-16T19:07:06.864Z] <<< [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2025-09-16T19:07:06.865Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/comlog-b733f [none]
+[debug] [2025-09-16T19:07:07.264Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects/comlog-b733f 401
+[debug] [2025-09-16T19:07:07.264Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects/comlog-b733f {"error":{"code":401,"message":"Request had invalid authentication credentials. Expected OAuth 2 access token, login cookie or other valid authentication credential. See https://developers.google.com/identity/sign-in/web/devconsole-project.","status":"UNAUTHENTICATED"}}
+[debug] [2025-09-16T19:07:07.265Z] Got a 401 Unauthenticated error for a call that required authentication. Refreshing tokens.
+[debug] [2025-09-16T19:07:07.265Z] Checked if tokens are valid: false, expires at: 1716501704178
+[debug] [2025-09-16T19:07:07.265Z] Checked if tokens are valid: false, expires at: 1716501704178
+[debug] [2025-09-16T19:07:07.265Z] > refreshing access token with scopes: []
+[debug] [2025-09-16T19:07:07.266Z] >>> [apiv2][query] POST https://www.googleapis.com/oauth2/v3/token [none]
+[debug] [2025-09-16T19:07:07.266Z] >>> [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2025-09-16T19:07:07.467Z] <<< [apiv2][status] POST https://www.googleapis.com/oauth2/v3/token 400
+[debug] [2025-09-16T19:07:07.467Z] <<< [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2025-09-16T19:07:07.469Z] Request to https://firebase.googleapis.com/v1beta1/projects/comlog-b733f had HTTP Error: 401, Request had invalid authentication credentials. Expected OAuth 2 access token, login cookie or other valid authentication credential. See https://developers.google.com/identity/sign-in/web/devconsole-project.
+[debug] [2025-09-16T19:07:07.472Z] FirebaseError: Request to https://firebase.googleapis.com/v1beta1/projects/comlog-b733f had HTTP Error: 401, Request had invalid authentication credentials. Expected OAuth 2 access token, login cookie or other valid authentication credential. See https://developers.google.com/identity/sign-in/web/devconsole-project.
+    at responseToError (C:\Users\CHRISTINA\AppData\Roaming\npm\node_modules\firebase-tools\lib\responseToError.js:52:12)
+    at RetryOperation._fn (C:\Users\CHRISTINA\AppData\Roaming\npm\node_modules\firebase-tools\lib\apiv2.js:312:77)
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+[error] 
+[error] Error: Failed to get Firebase project comlog-b733f. Please make sure the project exists and your account has permission to access it.

@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Seller Approval | Gawang Liliw</title>
+        <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+        <link rel="stylesheet" href="store.css">
+    </head>
+<body>
+    <div class="wrapper">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo-container d-flex align-items-center">
+                    <img src="static/photos/logo.png" alt="Gawang Liliw Logo" style="height: 100px;" class="logo-image">
+                </div>
+                <div class="user-info">
+                    <div class="user-details">
+                        <span class="user-name" id="userName">--</span>
+                        <span class="user-role">Administrator</span>
+                    </div>
+                </div>
+            </div>
+
+            <nav class="sidebar-nav">
+                <div class="nav-section">
+                    <a href="Dashboard.html" class="nav-link">
+                        <i class='bx bxs-dashboard'></i>
+                        <span>Dashboard</span>
+                    </a>
+                    <a href="store.html" class="nav-link active">
+                        <i class='bx bx-user-check'></i>
+                        <span>Seller Approval</span>
+                    </a>
+                    <a href="reports.html" class="nav-link">
+                        <i class='bx bx-message-dots'></i>
+                        <span>Messages</span>
+                    </a>
+                    <a href="Announcement.html" class="nav-link">
+                        <i class='bx bxs-megaphone'></i>
+                        <span>Events Announcement</span>
+                    </a>
+                    <a href="admin-account.html" class="nav-link">
+                        <i class='bx bx-user-circle'></i>
+                        <span>Account</span>
+                    </a>
+                </div>
+            </nav>
+
+            <div class="sidebar-footer">
+                <a href="#" id="logoutButton" class="nav-link">
+                    <i class='bx bx-log-out'></i>
+                    <span>Log Out</span>
+                </a>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="flex-grow-1 p-4">
+            <!-- Top Navbar -->
+            <header class="header">
+                <div class="flex items-center gap-4">
+                    <div class="header-title">
+                        <h1>Approval Overview</h1>
+                    </div>
+                </div>
+
+               <div class="notification-wrapper">
+  <button class="notification-btn" onclick="toggleNotifDropdown()">
+    <i class='bx bx-bell'></i>
+    <span id="notifBadge" class="notification-badge d-none">0</span>
+  </button>
+
+  <div id="notifList" class="notification-dropdown">
+    <div class="notification-title">Notifications</div>
+    <ul class="notification-list" id="notifItems">
+      <li class="text-center text-muted" id="noNotif">No new notifications</li>
+    </ul>
+  </div>
+</div>
+            </header>
+
+            <!-- Quick Stats -->
+            
+
+            <!-- Staff Table -->
+            <div class="table-container">
+                <div class="table-header">
+                    <h5 class="table-title">Seller Requests</h5>
+                    <div class="table-actions">
+                        <button class="refresh-btn">
+                            <i class='bx bx-refresh'></i> Refresh
+                        </button>
+                    </div>
+                </div>
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Shop Name</th>
+                                <th>Username</th>
+                                <th>Location</th>
+                                <th>Date Requested</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="staffTableBody">
+                            <tr>
+                                <td colspan="7" class="text-center">Loading requests...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="table-footer">
+                    <div class="pagination">
+                        <button class="pagination-btn">
+                            <i class='bx bx-chevron-left'></i>
+                        </button>
+                        <span class="page-info"> Page 1 of 1 </span>
+                        <button class="pagination-btn">
+                            <i class='bx bx-chevron-right'></i>
+                        </button>
+                    </div>
+                    <div class="entries-info">
+                        Showing <span id="startEntry">0</span> to <span id="endEntry">0</span> of <span id="totalEntries">0</span> entries
+                    </div>
+                </div>
+            </div>
+
+            <!-- Store History List - Properly placed inside the main content area -->
+            <div class="card store-history mt-4">
+                <div class="card-header">
+                    <h2 class="card-title">Store History</h2>
+                    <button class="badge view-all-btn">View All</button>
+                </div>
+                <div class="store-list">
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Staff Details Modal -->
+    <div class="modal fade" id="staffDetailsModal" tabindex="-1">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content modern-modal">
+                <div class="modal-header border-0">
+                    <div class="modal-title d-flex align-items-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" fill="none"
+                             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+                            <circle cx="9" cy="7" r="4"/>
+                            <path d="M22 21v-2a4 4 0 0 0-3-3.87"/>
+                            <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                        </svg>
+                        <h5 class="mb-0 fw-semibold">Seller Details</h5>
+                    </div>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="px-4 text-muted small mb-2">Review seller information before approval</div>
+    
+                <div class="modal-body px-4">
+                    <div class="staff-details-container">
+                        <!-- Repeat for each row -->
+                        <div class="detail-row">
+                            <div class="detail-label">Shop Name</div>
+                            <div class="detail-value" id="modalShopName">-</div>
+                        </div>
+                        <div class="detail-row">
+                            <div class="detail-label">Username</div>
+                            <div class="detail-value" id="modalUsername">-</div>
+                        </div>
+                        <div class="detail-row">
+                            <div class="detail-label">Email</div>
+                            <div class="detail-value" id="modalEmail">-</div>
+                        </div>
+                        <div class="detail-row">
+                            <div class="detail-label">Contact Number</div>
+                            <div class="detail-value" id="modalContact">-</div>
+                        </div>
+                        <div class="detail-row">
+                            <div class="detail-label">Address</div>
+                            <div class="detail-value" id="modalAddress">-</div>
+                        </div>
+                        <div class="detail-row">
+                            <div class="detail-label">City</div>
+                            <div class="detail-value" id="modalCity">-</div>
+                        </div>
+                        <div class="detail-row">
+                            <div class="detail-label">Province</div>
+                            <div class="detail-value" id="modalProvince">-</div>
+                        </div>
+                        <div class="detail-row">
+                            <div class="detail-label">Requested On</div>
+                            <div class="detail-value" id="modalRequestDate">-</div>
+                        </div>
+    
+                        <hr class="my-4">
+    
+                        <div class="detail-row">
+                            <div class="detail-label">Notes</div>
+                            <textarea id="adminNotes" class="form-control rounded-3" rows="3"
+                                      placeholder="Add notes about this staff approval (optional)"></textarea>
+                        </div>
+                    </div>
+                </div>
+    
+                <div class="modal-footer border-0 px-4 py-3 justify-content-between">
+                    <button type="button" class="btn btn-outline-danger" id="rejectStaffBtn">Reject</button>
+                    <div class="d-flex gap-2">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary" id="approveStaffBtn">Approve Seller</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script type="text/javascript"
+        src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js">
+</script>
+
+   
+    
+    <script src="https://unpkg.com/lucide@latest" defer></script>
+   
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" defer></script>
+    <script type="module" src="firebase-config.js"></script>
+    <script type="module" src="firebase-auth.js"></script>
+    <script type="module" src="store.js"></script>
+</body>
+</html>

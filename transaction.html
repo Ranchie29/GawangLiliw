@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transaction | Gawang Liliw</title>
+    <link rel="stylesheet" href="transaction.css">
+    <link rel="stylesheet" href="notification.css">
+    <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <script type="module" src="transaction.js" defer></script>
+    <script type="module" src="firebase-auth.js" defer></script>
+    <script type="module" src="firebase-config.js" defer></script>
+    <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/xlsx.full.min.js"></script>
+</head>
+<body>
+    <!-- Mobile Menu Toggle -->
+    <button class="mobile-menu-toggle">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+    </button>
+
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <h2>Welcome back, <br><span id="userName">User</span>!</h2>
+            <div class="sidebar-profile-picture">
+                <img id="sidebar-profile-picture" src="static/photos/default-profile.png" >
+                <div id="followerCount" style="margin-top: 8px; text-align: center; font-weight: bold; color: #555;">
+                    Followers: -
+                </div>
+            </div>
+        </div>
+        <nav>
+            <a href="staff-dashboard.html"><i class='bx bxs-dashboard'></i> Dashboard</a>
+          <div class="menu-item">
+                <a href="product.html" class="has-submenu">
+                  <i class='bx bx-package'></i> Product
+                  <i class='bx bx-chevron-down'></i>
+                </a>
+              </div>
+            <a href="transaction.html" class="active"><i class='bx bx-money'></i> Transaction</a>
+            <a href="message.html"><i class='bx bx-wallet'></i> Message</a>
+            <a href="account.html"><i class='bx bx-user'></i> Account</a>
+            <a href="index.html" id="logoutButton"><i class='bx bx-log-out'></i> Log Out</a>
+        </nav>
+    </div>
+
+    <main>
+        <header class="top-bar" style="display: flex; justify-content: space-between; align-items: center;">
+            <h1>Transaction Management</h1>
+        </header>
+
+        <div class="transaction-container">
+           <!-- Transaction Summary Cards -->
+            <section class="transaction-summary">
+                <div class="summary-card" id="completedOrdersCard" style="cursor: pointer;">
+                    <div class="card-icon success">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="20 6 9 17 4 12"></polyline>
+                        </svg>
+                    </div>
+                    <div class="card-content">
+                        <h3>Completed Orders</h3>
+                        <p class="amount" id="completedOrders">0</p>
+                    </div>
+                </div>
+
+                <div class="summary-card" id="pendingOrdersCard" style="cursor: pointer;">
+                    <div class="card-icon pending">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <polyline points="12 6 12 12 16 14"></polyline>
+                        </svg>
+                    </div>
+                    <div class="card-content">
+                        <h3>Pending Orders</h3>
+                        <p class="amount" id="pendingOrders">0</p>
+                    </div>
+                </div>
+
+                <div class="summary-card">
+                    <div class="card-icon revenue" style="background-color: rgba(52, 152, 219, 0.2);">
+                        <i class="fas fa-peso-sign" style="color: #3498db;"></i>
+                    </div>
+                    <div class="card-content">
+                        <h3>Total Revenue</h3>
+                        <p class="amount" id="totalRevenue">0</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Transaction Filters -->
+            <section class="transaction-filters">
+                <!-- Top Row: From, To, Clear Dates -->
+                <div class="filter-top-row">
+                  <div class="filter-group">
+                    <label for="fromDate">From Date</label>
+                    <input type="date" id="fromDate">
+                  </div>
+              
+                  <div class="filter-group">
+                    <label for="toDate">To Date</label>
+                    <input type="date" id="toDate">
+                  </div>
+              
+                  <div class="filter-group">
+                    <label> </label> <!-- Spacer to align with input fields -->
+                    <button id="clearDates" class="clear-dates-btn">
+                     </i> Clear Date
+                    </button>
+                  </div>
+                </div>
+              
+                <!-- Bottom Row: Status, Payment, Export -->
+                <div class="filter-bottom-row">
+                  <div class="filter-group">
+                    <label for="status">Status</label>
+                    <select id="status">
+                      <option value="all">All Status</option>
+                      <option value="To Pay">To Pay</option>
+                      <option value="To Received">To Received</option>
+                      <option value="To Shipped">To Shipped</option>
+                      <option value="Delivered">Delivered</option>
+                      <option value="Cancelled">Cancelled</option>
+                    </select>
+                  </div>
+              
+                  <div class="filter-group">
+                    <label for="paymentMethod">Payment Method</label>
+                    <select id="paymentMethod">
+                      <option value="all">All Methods</option>
+                      <option value="cash">Cash on Delivery</option>
+                      <option value="gcash">GCash</option>
+                    </select>
+                  </div>
+              
+                  <div class="filter-group">
+                    <label> </label> <!-- Spacer -->
+                    <button id="exportButton" class="export-btn">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                        <polyline points="7 10 12 15 17 10"></polyline>
+                        <line x1="12" y1="15" x2="12" y2="3"></line>
+                      </svg>
+                      Export Data
+                    </button>
+                  </div>
+                </div>
+              
+              </section>
+
+            <!-- Transaction Table -->
+            <section class="transaction-table">
+                <div class="table-header">
+                    <h2>Recent Transactions</h2>
+                    <button class="refresh-btn" id="refreshBtn">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                          <path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.3"></path>
+                        </svg>
+                    </button>
+                </div>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Customer</th>
+                                <th>Products</th>
+                                <th>Date</th>
+                                <th>Amount</th>
+                                <th>Payment Method</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="transactionTableBody">
+                            <!-- Transaction rows will be dynamically added here -->
+                        </tbody>
+                    </table>
+                </div>
+                <div class="table-footer">
+                    <div class="per-page">
+                        <label for="rowsPerPage">Rows per page:</label>
+                        <select id="rowsPerPage">
+                            <option value="10">10</option>
+                            <option value="25">25</option>
+                            <option value="50">50</option>
+                            <option value="100">100</option>
+                        </select>
+                    </div>
+                    <div class="pagination">
+                        <button class="prev-page" disabled>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                        </button>
+                        <span>Page 1 of 10</span>
+                        <button class="next-page">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                        </button>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- Transaction Details Modal -->
+        <div class="modal" id="transactionModal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>Transaction Details</h2>
+                    <button class="close-modal">×</button>
+                </div>
+                <div class="modal-body">
+                    <!-- Transaction details will be dynamically populated here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Completed Orders Modal -->
+        <div class="modal" id="completedOrdersModal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>Completed Orders</h2>
+                    <button class="close-modal" id="closeCompletedModal">×</button>
+                </div>
+                <div class="modal-body">
+                    <div class="order-details">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Order ID</th>
+                                    <th>Customer</th>
+                                    <th>Date</th>
+                                    <th>Status</th>
+                                    <th>Total Amount</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="completedOrdersTableBody">
+                                <!-- Completed order rows will be dynamically added here -->
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="pagination" id="completed-orders-pagination">
+                        <button class="pagination-btn" data-page="prev" disabled>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                        </button>
+                        <div id="completed-orders-pagination-numbers"></div>
+                        <button class="pagination-btn" data-page="next">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pending Orders Modal -->
+        <div class="modal" id="pendingOrdersModal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>Pending Orders</h2>
+                    <button class="close-modal" id="closePendingModal">×</button>
+                </div>
+                <div class="modal-body">
+                    <div class="order-details">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Order ID</th>
+                                    <th>Customer</th>
+                                    <th>Date</th>
+                                    <th>Status</th>
+                                    <th>Total Amount</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="pendingOrdersTableBody">
+                                <!-- Pending order rows will be dynamically added here -->
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="pagination" id="pending-orders-pagination">
+                        <button class="pagination-btn" data-page="prev" disabled>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                        </button>
+                        <div id="pending-orders-pagination-numbers"></div>
+                        <button class="pagination-btn" data-page="next">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Order Details Modal -->
+        <div class="modal" id="orderDetailsModal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>Order Details</h2>
+                    <button class="close-modal" id="closeOrderDetailsModal">×</button>
+                </div>
+                <div class="modal-body">
+                    <div class="order-details">
+                        <h3>Order Summary</h3>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Order ID</th>
+                                    <th>Customer</th>
+                                    <th>Date</th>
+                                    <th>Status</th>
+                                    <th>Total Amount</th>
+                                </tr>
+                            </thead>
+                            <tbody id="orderDetailsTableBody">
+                                <!-- Order details will be dynamically added here -->
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="order-items">
+                        <h3>Items</h3>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Product</th>
+                                    <th>Size</th>
+                                    <th>Color</th>
+                                    <th>Quantity</th>
+                                    <th>Price</th>
+                                    <th>Subtotal</th>
+                                </tr>
+                            </thead>
+                            <tbody id="orderItemsTableBody">
+                                <!-- Order items will be dynamically added here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Notification Toast -->
+        <div id="notificationToast" class="notification-toast">
+            <div class="notification-toast-header">
+                <span class="notification-toast-title">New Notification</span>
+                <button class="notification-toast-close">×</button>
+            </div>
+            <div class="notification-toast-body">
+                A new notification has arrived
+            </div>
+        </div>
+    </main>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
+    <script>
+        // Mobile menu toggle
+        const menuToggle = document.querySelector('.mobile-menu-toggle');
+        const sidebar = document.querySelector('.sidebar');
+        const main = document.querySelector('main');
+    
+        menuToggle.addEventListener('click', () => {
+            sidebar.classList.toggle('active');
+            main.classList.toggle('sidebar-active');
+            menuToggle.classList.toggle('active');
+        });
+    
+        // Close sidebar when clicking outside
+        document.addEventListener('click', (e) => {
+            if (window.innerWidth <= 768) {
+                if (!sidebar.contains(e.target) && !menuToggle.contains(e.target)) {
+                    sidebar.classList.remove('active');
+                    main.classList.remove('sidebar-active');
+                    menuToggle.classList.remove('active');
+                }
+            }
+        });
+    
+        // Handle window resize
+        window.addEventListener('resize', () => {
+            if (window.innerWidth > 768) {
+                sidebar.classList.remove('active');
+                main.classList.remove('sidebar-active');
+                menuToggle.classList.remove('active');
+            }
+        });
+    
+        // Notification settings button
+        const notificationSettings = document.getElementById('notificationSettings');
+        if (notificationSettings) {
+            notificationSettings.addEventListener('click', function() {
+                window.location.href = 'settings.html#notifications';
+            });
+        }
+    </script>
+</body>
+</html>

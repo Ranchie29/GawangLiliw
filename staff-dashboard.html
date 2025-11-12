@@ -1,0 +1,1131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Seller | Dashboard</title>
+    <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>   
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="staff.css">
+    <script type="module" src="firebase-config.js" defer></script>
+    <script type="module" src="firebase-auth.js" defer></script>
+    <script type="module" src="staff.js" defer></script>
+    <script type="module" src="mobile-toggle.js" defer></script>
+
+    <style>
+        /* === Mobile Navigation Toggle === */
+        .nav-toggle {
+          position: fixed;
+          top: 1rem;
+          left: 1rem;
+          z-index: 1100;
+          background: #ffffff;
+          color: #0f172a;
+          border: none;
+          padding: 0.75rem;
+          border-radius: 1rem;
+          cursor: pointer;
+          box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+          transition: background 0.3s ease, color 0.3s ease, transform 0.2s ease;
+        }
+        
+        .nav-toggle:hover {
+          background: #0ea5e9;
+          color: #ffffff;
+          transform: scale(1.05);
+        }
+        
+        .nav-toggle i {
+          font-size: 1.6rem;
+        }
+        
+        /* === Mobile Sidebar & Overlay === */
+        @media (max-width: 796px) {
+          .nav-toggle {
+            display: block;
+          }
+        
+          .sidebar {
+            transform: translateX(-100%);
+            width: 280px;
+            z-index: 1050;
+            transition: transform 0.3s ease;
+            background: #ffffff;
+            box-shadow: 4px 0 15px rgba(0, 0, 0, 0.05);
+          }
+        
+          .sidebar.show {
+            transform: translateX(0);
+          }
+        
+          .main-content {
+            margin-left: 0;
+            transition: margin-left 0.3s ease;
+          }
+        
+          .overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.4);
+            z-index: 1000;
+          }
+        
+          .overlay.show {
+            display: block;
+          }
+        }
+        
+        /* === Notification Button === */
+        .notification-btn {
+          position: relative;
+          background: none;
+          border: none;
+          cursor: pointer;
+          padding: 0.5rem;
+          display: flex;
+          align-items: center;
+          color: #1f2937;
+        }
+        
+        .notification-btn i {
+          font-size: 1.5rem;
+        }
+        
+        .notification-badge {
+          position: absolute;
+          top: 0;
+          right: 0;
+          background: #ef4444;
+          color: white;
+          border-radius: 9999px;
+          width: 1.2rem;
+          height: 1.2rem;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 0.75rem;
+          font-weight: 700;
+          box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+        }
+        
+        /* === Hide Utility === */
+        .hidden {
+          display: none;
+        }
+        
+        /* === Modals Base === */
+        #allOrdersModal,
+        #orderDetailsModal,
+        #totalOrdersModal,
+        #pendingOrdersModal,
+        #completedOrdersModal,
+        #cancelledOrdersModal,
+        #returnRefundOrdersModal {
+          display: none;
+          position: fixed;
+          inset: 0;
+          z-index: 1000;
+          background: rgba(17, 24, 39, 0.6);
+          backdrop-filter: blur(8px);
+          justify-content: center;
+          align-items: center;
+          animation: fadeIn 0.3s ease-in-out forwards;
+          padding: 1.5rem;
+        }
+        
+        #allOrdersModal.show,
+        #orderDetailsModal.show,
+        #totalOrdersModal.show,
+        #pendingOrdersModal.show,
+        #completedOrdersModal.show,
+        #cancelledOrdersModal.show,
+        #returnRefundOrdersModal.show {
+          display: flex;
+        }
+        
+        /* === Modal Content === */
+        #allOrdersModal .modal-content,
+        #orderDetailsModal .modal-content,
+        #totalOrdersModal .modal-content,
+        #pendingOrdersModal .modal-content,
+        #completedOrdersModal .modal-content,
+        #cancelledOrdersModal .modal-content,
+        #returnRefundOrdersModal .modal-content {
+          background: linear-gradient(to bottom right, #ffffff, #f8fafc);
+          padding: 2rem;
+          width: 100%;
+          max-width: 900px;
+          border-radius: 1.5rem;
+          box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+          animation: slideUp 0.4s ease-out;
+          max-height: 80vh;
+          overflow-y: auto;
+          display: flex;
+          flex-direction: column;
+          gap: 1.5rem;
+          position: relative;
+        }
+        
+        /* === Modal Header === */
+        .modal-content h3 {
+          font-size: 1.75rem;
+          font-weight: 700;
+          color: #1e293b;
+          margin: 0;
+          padding-bottom: 1rem;
+          border-bottom: 1px solid #e2e8f0;
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+        }
+        
+        /* === Close Button === */
+        .close-btn {
+          background: none;
+          border: none;
+          font-size: 1.5rem;
+          color: #6b7280;
+          cursor: pointer;
+          position: absolute;
+          top: 20px;
+          right: 20px;
+          transition: color 0.3s ease, transform 0.2s ease;
+        }
+        
+        .close-btn:hover {
+          color: #ef4444;
+          transform: scale(1.1);
+        }
+        
+        /* === Icon Style === */
+        .details-icon {
+          color: #3b82f6;
+          font-size: 1.25rem;
+          cursor: pointer;
+          transition: color 0.3s ease;
+        }
+        
+        .details-icon:hover {
+          color: #2563eb;
+        }
+        
+        /* === Table Wrapper === */
+        .order-details-wrapper {
+          display: flex;
+          flex-direction: column;
+          gap: 2rem;
+        }
+
+        /* === Order Details Table (Same for both) === */
+        .order-details-table {
+          width: 100%;
+          border-collapse: collapse;
+          font-size: 0.95rem;
+          color: #1f2937;
+          background-color: #ffffff;
+          border-radius: 10px;
+          overflow: hidden;
+          box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+        }
+
+        /* Table Headers */
+        .order-details-table thead {
+          background-color: #a9cce3;
+        }
+
+        .order-details-table th {
+          text-align: left;
+          padding: 12px 16px;
+          font-weight: 600;
+          color: #000000;
+          border-bottom: 1px solid #e5e7eb;
+        }
+
+        /* Table Rows */
+        .order-details-table td {
+          padding: 12px 16px;
+          border-bottom: 1px solid #f1f5f9;
+        }
+
+        /* Section Heading (Items) */
+        .mt-4 {
+          margin-top: 2rem;
+          font-size: 1.25rem;
+          font-weight: 600;
+          color: #1e293b;
+          border-bottom: 1px solid #e5e7eb;
+          padding-bottom: 0.5rem;
+        }
+        
+        /* === Stat Card Hover === */
+        .stat-card {
+          cursor: pointer;
+          transition: transform 0.3s ease, box-shadow 0.3s ease;
+          border-radius: 1rem;
+          background: #d6eefb;
+          box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04);
+        }
+        
+        .stat-card:hover {
+          transform: translateY(-6px);
+          box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+        }
+        
+        /* === Button Link (Details) === */
+        .details-btn {
+          background: none;
+          border: none;
+          padding: 0;
+          cursor: pointer;
+          color: #0ea5e9;
+          transition: color 0.3s ease;
+        }
+        
+        .details-btn:hover {
+          color: #0284c7;
+        }
+        
+        /* === Animations === */
+        @keyframes fadeIn {
+          from {
+            background-color: rgba(0, 0, 0, 0);
+            opacity: 0;
+          }
+          to {
+            background-color: rgba(17, 24, 39, 0.6);
+            opacity: 1;
+          }
+        }
+        
+        @keyframes slideUp {
+          from {
+            opacity: 0;
+            transform: translateY(40px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+
+        /* === Sales Overview Styles === */
+        .sales-overview .card-body {
+          display: flex;
+          flex-direction: column;
+          gap: 1.5rem;
+        }
+
+        .sales-chart-container {
+          position: relative;
+          height: 300px;
+          width: 100%;
+        }
+
+        .sales-summary {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+          gap: 1rem;
+          padding: 1rem;
+          background: #f8fafc;
+          border-radius: 0.5rem;
+          box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+        }
+
+        .summary-item {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          text-align: center;
+        }
+
+        .summary-item h3 {
+          font-size: 1rem;
+          font-weight: 600;
+          color: #1e293b;
+          margin-bottom: 0.5rem;
+        }
+
+        .summary-item p {
+          font-size: 1.25rem;
+          font-weight: 700;
+          color: #3498db;
+        }
+
+        @media (max-width: 768px) {
+          .sales-summary {
+            grid-template-columns: 1fr;
+          }
+        }
+
+        /* === Event Announcement Styles === */
+        .event-announcement {
+          background: linear-gradient(135deg, #fef3c7, #fef9c3);
+          border-radius: 1rem;
+          padding: 1.5rem;
+          margin-bottom: 1.5rem;
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+          display: flex;
+          flex-direction: column;
+          gap: 1rem;
+        }
+        .event-announcement {
+  display: none;
+}
+
+        .event-announcement h2 {
+          font-size: 1.5rem;
+          font-weight: 700;
+          color: #1e293b;
+          margin: 0;
+        }
+
+        .event-announcement p {
+          font-size: 1rem;
+          color: #4b5563;
+          margin: 0;
+        }
+
+        .event-announcement .event-date {
+          font-weight: 600;
+          color: #d97706;
+        }
+
+        .event-announcement .event-btn {
+          align-self: flex-start;
+          background-color: #d97706;
+          color: white;
+          padding: 0.5rem 1rem;
+          border-radius: 0.5rem;
+          text-decoration: none;
+          font-weight: 500;
+          transition: background-color 0.3s ease;
+        }
+
+        .event-announcement .event-btn:hover {
+          background-color: #b45309;
+        }
+        .custom-dropdown {
+      position: relative;
+      width: 100%;
+    }
+    .custom-dropdown-toggle {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      background: #fff;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .custom-dropdown-menu {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      background: #fff;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      z-index: 1000;
+      display: none;
+    }
+    .custom-dropdown-menu.show {
+      display: block;
+    }
+    .custom-dropdown-item {
+      padding: 10px;
+      cursor: pointer;
+    }
+    .custom-dropdown-item:hover {
+      background: #f0f0f0;
+    }
+    </style>
+</head>
+<body>
+    <!-- Mobile Navigation Toggle -->
+    <button class="nav-toggle fixed top-4 left-4 z-[1100] bg-white text-black p-3 rounded-lg cursor-pointer md:hidden" aria-label="Toggle navigation">
+        <i class="bx bx-menu"></i>
+    </button>
+
+    <!-- Overlay for mobile menu -->
+    <div class="overlay"></div>
+
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <div class="sidebar-profile-picture">
+                <img id="sidebar-profile-picture" src="static/photos/default-profile.png" alt="Profile Picture">
+                <div id="followerCount" style="margin-top: 8px; text-align: center; font-weight: bold; color: #645b5b;">
+                    Followers: -
+                </div>
+            </div>
+        </div>
+        <nav>
+            <a href="staff-dashboard.html" class="active"><i class='bx bxs-dashboard'></i> Dashboard</a>
+            <div class="menu-item">
+              <a href="product.html" class="has-submenu">
+                <i class='bx bx-package'></i> Product
+                <i class='bx bx-chevron-down'></i>
+              </a>
+            </div>
+            <a href="transaction.html"><i class='bx bx-money'></i> Transaction</a>
+            <a href="message.html"><i class='bx bx-wallet'></i> Message</a>
+            <a href="account.html"><i class='bx bx-user'></i> Account </a>
+            <a href="index.html" id="logoutButton"><i class='bx bx-log-out'></i> Log Out</a>
+        </nav>
+    </div>
+
+    <main class="main-content">
+        <header class="top-bar" style="display: flex; justify-content: space-between; align-items: center;">
+            <div style="display: flex; flex-direction: column;">
+                <h1 style="margin: 0;">Dashboard Overview</h1>
+                <p style="margin: 0.25rem 0 0;">
+                    Welcome
+                    <span id="userName" class="font-medium text-primary"></span>
+                </p>
+            </div>
+            <button class="notification-btn" aria-label="Notifications" style="position: relative;">
+                <i class="fas fa-bell"></i>
+                <span class="notification-badge" id="notificationCount">0</span>
+            </button>
+        </header>
+
+        <!-- Event Announcement Section -->
+        <div class="event-announcement">
+            <h2>Upcoming Event:-</h2>
+            <p></p>
+            <p class="event-date">Date:-</p>
+        </div>
+
+        <div class="stats-cards">
+            <div class="stat-card">
+                <div class="stat-icon" style="background-color: rgba(52, 152, 219, 0.2);">
+                    <i class="fas fa-peso-sign" style="color: #3498db;"></i>
+                </div>
+                <div class="stat-details">
+                    <h3>Total Revenue</h3>
+                    <p class="stat-value">₱0</p>
+                </div>
+            </div>
+            <div class="stat-card" id="totalOrdersCard" onclick="openTotalOrdersModal()">
+                <div class="stat-icon" style="background-color: rgba(46, 204, 113, 0.2);">
+                    <i class="fas fa-shopping-bag" style="color: #2ecc71;"></i>
+                </div>
+                <div class="stat-details">
+                    <h3>Total Orders</h3>
+                    <p class="stat-value">0</p>
+                </div>
+            </div>
+            <div class="stat-card" id="pendingOrdersCard" onclick="openPendingOrdersModal()">
+                <div class="stat-icon" style="background-color: rgba(155, 89, 182, 0.2);">
+                    <i class="fas fa-ban" style="color: #9b59b6;"></i>
+                </div>
+                <div class="stat-details">
+                    <h3>Pending Orders</h3>
+                    <p class="stat-value">0</p>
+                </div>
+            </div>
+            <div class="stat-card" id="completedOrdersCard" onclick="openCompletedOrdersModal()">
+                <div class="stat-icon" style="background-color: rgba(37, 223, 13, 0.2);">
+                    <i class="fas fa-check" style="color: #40ec1d;"></i>
+                </div>
+                <div class="stat-details">
+                    <h3>Completed</h3>
+                    <p class="stat-value">0</p>
+                </div>
+            </div>
+            <div class="stat-card" id="cancelledOrdersCard" onclick="openCancelledOrdersModal()">
+                <div class="stat-icon" style="background-color: rgba(123, 231, 60, 0.2);">
+                    <i class="fas fa-cancel" style="color: #f02a2a;"></i>
+                </div>
+                <div class="stat-details">
+                    <h3>Cancelled</h3>
+                    <p class="stat-value">0</p>
+                </div>
+            </div>
+            <div class="stat-card" id="returnRefundOrdersCard" onclick="openReturnRefundOrdersModal()">
+                <div class="stat-icon" style="background-color: rgba(141, 14, 14, 0.2);">
+                    <i class="fas fa-repeat" style="color: #e7a71d;"></i>
+                </div>
+                <div class="stat-details">
+                    <h3>Return/Refund</h3>
+                    <p class="stat-value">0</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="sales-card">
+            <div class="card-header">
+              <h2>Sales Overview</h2>
+              <div class="card-actions">
+                <select id="periodFilter" class="filter-dropdown">
+                  <option value="yearly">Yearly</option>
+                  <option value="monthly">Monthly</option>
+                  <option value="weekly">Weekly</option>
+                  <option value="daily">Daily</option>
+                </select>
+                <select id="yearFilter" class="filter-dropdown"></select>
+                <select id="monthFilter" class="filter-dropdown" style="display: none;"></select>
+                <select id="weekFilter" class="filter-dropdown" style="display: none;"></select>
+                <select id="dayFilter" class="filter-dropdown" style="display: none;"></select>
+              </div>
+            </div>
+            
+            <div class="card-body">
+              
+              <!-- Sales Summary -->
+              <div class="sales-summary">
+                <div class="summary-item">
+                  <h3>Total Sales</h3>
+                  <p id="totalSales">₱0.00</p>
+                </div>
+                <div class="summary-item">
+                  <h3>Average Order Value</h3>
+                  <p id="avgOrderValue">₱0.00</p>
+                </div>
+              </div>
+          
+              <!-- Chart below summary -->
+              <div class="sales-chart-container">
+                <canvas id="salesChart"></canvas>
+              </div>
+          
+            </div>
+          </div>
+          
+
+            <!-- Shop Rating Modal -->
+<div id="shopRatingModal" class="modal">
+    <div class="modal-content">
+      <span id="closeShopRatingModal" class="close">&times;</span>
+      <h2>Shop Rating Breakdown</h2>
+      <div class="shop-ratings">
+        <div class="rating-summary">
+          <span class="rating-number">0.0</span>
+          <div class="rating-stars"></div>
+          <span class="rating-count">Based on 0 reviews</span>
+        </div>
+        <div class="rating-breakdown">
+          <div class="rating-row">
+            <span class="stars">5 stars</span>
+            <div class="progress-container">
+              <div class="progress-bar" style="width: 0%;"></div>
+            </div>
+            <span class="percentage">0%</span>
+          </div>
+          <div class="rating-row">
+            <span class="stars">4 stars</span>
+            <div class="progress-container">
+              <div class="progress-bar" style="width: 0%;"></div>
+            </div>
+            <span class="percentage">0%</span>
+          </div>
+          <div class="rating-row">
+            <span class="stars">3 stars</span>
+            <div class="progress-container">
+              <div class="progress-bar" style="width: 0%;"></div>
+            </div>
+            <span class="percentage">0%</span>
+          </div>
+          <div class="rating-row">
+            <span class="stars">2 stars</span>
+            <div class="progress-container">
+              <div class="progress-bar" style="width: 0%;"></div>
+            </div>
+            <span class="percentage">0%</span>
+          </div>
+          <div class="rating-row">
+            <span class="stars">1 star</span>
+            <div class="progress-container">
+              <div class="progress-bar" style="width: 0%;"></div>
+            </div>
+            <span class="percentage">0%</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+            <!-- Modal for All Orders -->
+            <div id="allOrdersModal" class="modal">
+                <div class="modal-content large">
+                    <div class="modal-header">
+                        <h2>All Orders</h2>
+                        <button class="close-btn" onclick="closeAllOrdersModal()">×</button>
+                    </div>                      
+                    <div class="orders-table-wrapper">
+                        <table class="orders-table">
+                            <thead>
+                                <tr>
+                                    <th>Order ID</th>
+                                    <th>Customer</th>
+                                    <th>Date</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="ordersTableBody">
+                                <!-- Orders inserted here -->
+                            </tbody>
+                        </table>
+                    </div>
+                    <div id="orders-pagination" class="pagination">
+                        <button class="pagination-btn" data-page="prev"><i class="fas fa-chevron-left"></i></button>
+                        <div id="orders-pagination-numbers" class="pagination-numbers"></div>
+                        <button class="pagination-btn" data-page="next"><i class="fas fa-chevron-right"></i></button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Modal for Total Orders -->
+            <div id="totalOrdersModal" class="modal">
+                <div class="modal-content large">
+                    <div class="modal-header">
+                        <h2>Total Orders</h2>
+                        <button class="close-btn" onclick="closeTotalOrdersModal()">×</button>
+                    </div>
+                    <div class="orders-table-wrapper">
+                        <table class="orders-table">
+                            <thead>
+                                <tr>
+                                    <th>Order ID</th>
+                                    <th>Customer</th>
+                                    <th>Date</th>
+                                    <th>Status</th>
+                                    <th>Total</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="totalOrdersTableBody"></tbody>
+                        </table>
+                    </div>
+                    <div class="pagination" id="orders-pagination">
+                        <button class="pagination-btn" data-page="prev"><i class="fas fa-chevron-left"></i></button>
+                        <div class="pagination-numbers" id="orders-pagination-numbers"></div>
+                        <button class="pagination-btn" data-page="next"><i class="fas fa-chevron-right"></i></button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Modal for Pending Orders -->
+            <div id="pendingOrdersModal" class="modal">
+                <div class="modal-content large">
+                    <div class="modal-header">
+                        <h2>Pending Orders</h2>
+                        <button class="close-btn" onclick="closePendingOrdersModal()">×</button>
+                    </div>                      
+                    <div class="orders-table-wrapper">
+                        <table class="orders-table">
+                            <thead>
+                                <tr>
+                                    <th>Order ID</th>
+                                    <th>Customer</th>
+                                    <th>Date</th>
+                                    <th>Status</th>
+                                    <th>Total</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="pendingOrdersTableBody"></tbody>
+                        </table>
+                    </div>
+                    <div class="pagination" id="pending-orders-pagination">
+                        <button class="pagination-btn" data-page="prev"><i class="fas fa-chevron-left"></i></button>
+                        <div class="pagination-numbers" id="pending-orders-pagination-numbers"></div>
+                        <button class="pagination-btn" data-page="next"><i class="fas fa-chevron-right"></i></button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Modal for Completed Orders -->
+            <div id="completedOrdersModal" class="modal">
+                <div class="modal-content large">
+                    <div class="modal-header">
+                        <h2>Completed Orders</h2>
+                        <button class="close-btn" onclick="closeCompletedOrdersModal()">×</button>
+                    </div>                      
+                    <div class="orders-table-wrapper">
+                        <table class="orders-table">
+                            <thead>
+                                <tr>
+                                    <th>Order ID</th>
+                                    <th>Customer</th>
+                                    <th>Date</th>
+                                    <th>Status</th>
+                                    <th>Total</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="completedOrdersTableBody"></tbody>
+                        </table>
+                    </div>
+                    <div class="pagination" id="completed-orders-pagination">
+                        <button class="pagination-btn" data-page="prev"><i class="fas fa-chevron-left"></i></button>
+                        <div class="pagination-numbers" id="completed-orders-pagination-numbers"></div>
+                        <button class="pagination-btn" data-page="next"><i class="fas fa-chevron-right"></i></button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Modal for Cancelled Orders -->
+            <div id="cancelledOrdersModal" class="modal">
+                <div class="modal-content large">
+                    <div class="modal-header">
+                        <h2>Cancelled Orders</h2>
+                        <button class="close-btn" onclick="closeCancelledOrdersModal()">×</button>
+                    </div>
+                    <div class="orders-table-wrapper">
+                        <table class="orders-table">
+                            <thead>
+                                <tr>
+                                    <th>Order ID</th>
+                                    <th>Customer</th>
+                                    <th>Date</th>
+                                    <th>Status</th>
+                                    <th>Total</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="cancelledOrdersTableBody"></tbody>
+                        </table>
+                    </div>
+                    <div class="pagination" id="cancelled-orders-pagination">
+                        <button class="pagination-btn" data-page="prev"><i class="fas fa-chevron-left"></i></button>
+                        <div class="pagination-numbers" id="cancelled-orders-pagination-numbers"></div>
+                        <button class="pagination-btn" data-page="next"><i class="fas fa-chevron-right"></i></button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Modal for Return/Refund Orders -->
+            <div id="returnRefundOrdersModal" class="modal">
+                <div class="modal-content large">
+                    <div class="modal-header">
+                        <h2>Return/Refund Orders</h2>
+                        <button class="close-btn" onclick="closeReturnRefundOrdersModal()">×</button>
+                    </div>                      
+                    <div class="orders-table-wrapper">
+                        <table class="orders-table">
+                            <thead>
+                                <tr>
+                                    <th>Order ID</th>
+                                    <th>Customer</th>
+                                    <th>Date</th>
+                                    <th>Status</th>
+                                    <th>Total</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="returnRefundOrdersTableBody"></tbody>
+                        </table>
+                    </div>
+                    <div class="pagination" id="return-refund-orders-pagination">
+                        <button class="pagination-btn" data-page="prev"><i class="fas fa-chevron-left"></i></button>
+                        <div class="pagination-numbers" id="return-refund-orders-pagination-numbers"></div>
+                        <button class="pagination-btn" data-page="next"><i class="fas fa-chevron-right"></i></button>
+                    </div>
+                </div>
+            </div>
+
+           <!-- Order Details Modal -->
+           <div id="orderDetailsModal" class="modal">
+            <div class="modal-content">
+              
+              <!-- Close Button -->
+              <button class="modal-close" onclick="closeOrderDetailsModal()">&times;</button>
+          
+              <!-- Header -->
+              <h2>Order Details</h2>
+          
+              <!-- Order Summary -->
+              <div class="order-summary">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Order ID</th>
+                      <th>Customer</th>
+                      <th>Date</th>
+                      <th>Status</th>
+                      <th>Total</th>
+                      <th>Payment Method</th>
+                    </tr>
+                  </thead>
+                  <tbody id="orderDetailsTableBody"></tbody>
+                </table>
+              </div>
+          
+              <!-- Items -->
+              <h3>Items</h3>
+              <div class="items-table">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Image</th>
+                      <th>Product</th>
+                      <th>Size</th>
+                      <th>Color</th>
+                      <th>Quantity</th>
+                      <th>Price</th>
+                      <th>Subtotal</th>
+                    </tr>
+                  </thead>
+                  <tbody id="orderItemsTableBody"></tbody>
+                </table>
+              </div>
+          
+              <!-- Payment Proof -->
+              <div class="payment-proof">
+                <h3>Payment Proof</h3>
+                <div id="paymentProofContainer" class="payment-proof-container"></div>
+              </div>
+          
+            </div>
+          </div>          
+  <!-- Full-Size Image Modal -->
+  <div id="fullImageModal" class="modal">
+    <div class="modal-content max-w-4xl p-4">
+      <span class="modal-close" onclick="closeFullImageModal()">&times;</span>
+      <img id="fullImage" src="" alt="Full-size Payment Proof" class="w-full max-h-[80vh] object-contain">
+    </div>
+  </div>
+
+            <!-- Container for Top Selling Products and Shop Rating -->
+<div class="dashboard-section-container">
+  <!-- Top Selling Products Card -->
+  <div class="dashboard-card top-products">
+      <div class="card-header">
+          <h2 class="text-lg font-semibold text-gray-800">Top Selling Products</h2>
+          <button class="btn-text" id="viewAllTopProductsBtn">View All</button>
+      </div>
+      <div class="card-body">
+          <div class="product-list"></div>
+      </div>
+  </div>
+
+  <!-- Shop Rating -->
+  <div class="dashboard-card shop-ratings">
+      <div class="card-header">
+          <h2>Shop Rating</h2>
+      </div>
+      <div class="card-body">
+          <div class="rating-summary">
+              <!-- Average Rating -->
+              <div class="average-rating">
+                  <span class="rating-number">0.0</span>
+                  <div class="rating-stars">
+                      <i class="fas fa-star"></i>
+                      <i class="fas fa-star"></i>
+                      <i class="fas fa-star"></i>
+                      <i class="fas fa-star"></i>
+                      <i class="fas fa-star-half-alt"></i>
+                  </div>
+                  <span class="rating-count">Based on - reviews</span>
+              </div>
+              <!-- Rating Breakdown -->
+              <div class="rating-breakdown">
+                  <!-- Repeating Rows -->
+                  <div class="rating-row">
+                      <div class="star-label">5 <i class="fas fa-star"></i></div>
+                      <div class="progress-bar-container">
+                          <div class="progress-bar" style="width: 0%"></div>
+                      </div>
+                      <div class="percentage">0%</div>
+                  </div>
+                  <div class="rating-row">
+                      <div class="star-label">4 <i class="fas fa-star"></i></div>
+                      <div class="progress-bar-container">
+                          <div class="progress-bar" style="width: 0%"></div>
+                      </div>
+                      <div class="percentage">0%</div>
+                  </div>
+                  <div class="rating-row">
+                      <div class="star-label">3 <i class="fas fa-star"></i></div>
+                      <div class="progress-bar-container">
+                          <div class="progress-bar" style="width: 0%"></div>
+                      </div>
+                      <div class="percentage">0%</div>
+                  </div>
+                  <div class="rating-row">
+                      <div class="star-label">2 <i class="fas fa-star"></i></div>
+                      <div class="progress-bar-container">
+                          <div class="progress-bar" style="width: 0%"></div>
+                      </div>
+                      <div class="percentage">0%</div>
+                  </div>
+                  <div class="rating-row">
+                      <div class="star-label">1 <i class="fas fa-star"></i></div>
+                      <div class="progress-bar-container">
+                          <div class="progress-bar" style="width: 0%"></div>
+                      </div>
+                      <div class="percentage">0%</div>
+                  </div>
+              </div>
+          </div>
+      </div>
+  </div>
+</div>
+
+<!-- Modal: Full Product List -->
+<div class="modal" id="viewAllTopProductsModal">
+  <div class="modal-content">
+      <div class="modal-header">
+          <h3>Top Selling Products</h3>
+          <button class="btn-icon close-modal" id="closeTopProductsModal" aria-label="Close Modal">
+              <i class="fas fa-times"></i>
+          </button>
+      </div>
+      <div class="modal-body">
+          <div class="full-product-list" id="fullProductList"></div>
+      </div>
+  </div>
+</div>
+
+<!-- Customer Reviews Card -->
+<div class="dashboard-card customer-reviews hidden">
+  <div class="card-header">
+      <h2>Customer Reviews</h2>
+      <div class="header-actions">
+          <select id="sort-reviews" class="sort-dropdown">
+              <option value="recent">Most Recent</option>
+              <option value="highest">Highest Rated</option>
+              <option value="lowest">Lowest Rated</option>
+              <option value="helpful">Most Helpful</option>
+          </select>
+          <button class="btn-text" id="view-all-reviews">View All</button>
+      </div>
+  </div>
+  <div class="card-body">
+      <div class="rating-summary hidden">
+          <div class="average-rating">
+              <div class="rating-number-container">
+                  <span class="rating-number">0</span>
+                  <span class="rating-max">/ 5</span>
+              </div>
+              <div class="rating-stars">
+                  <i class="fas fa-star"></i>
+                  <i class="fas fa-star"></i>
+                  <i class="fas fa-star"></i>
+                  <i class="fas fa-star"></i>
+                  <i class="fas fa-star-half-alt"></i>
+              </div>
+              <span class="rating-count">0 reviews</span>
+          </div>
+          <div class="rating-breakdown">
+              <div class="rating-row">
+                  <div class="star-label">5 <i class="fas fa-star"></i></div>
+                  <div class="progress-bar-container">
+                      <div class="progress-bar" style="width: 0%"></div>
+                  </div>
+                  <div class="percentage">0%</div>
+              </div>
+              <div class="rating-row">
+                  <div class="star-label">4 <i class="fas fa-star"></i></div>
+                  <div class="progress-bar-container">
+                      <div class="progress-bar" style="width: 0%"></div>
+                  </div>
+                  <div class="percentage">0%</div>
+              </div>
+              <div class="rating-row">
+                  <div class="star-label">3 <i class="fas fa-star"></i></div>
+                  <div class="progress-bar-container">
+                      <div class="progress-bar" style="width: 0%"></div>
+                  </div>
+                  <div class="percentage">0%</div>
+              </div>
+              <div class="rating-row">
+                  <div class="star-label">2 <i class="fas fa-star"></i></div>
+                  <div class="progress-bar-container">
+                      <div class="progress-bar" style="width: 0%"></div>
+                  </div>
+                  <div class="percentage">0%</div>
+              </div>
+              <div class="rating-row">
+                  <div class="star-label">1 <i class="fas fa-star"></i></div>
+                  <div class="progress-bar-container">
+                      <div class="progress-bar" style="width: 0%"></div>
+                  </div>
+                  <div class="percentage">0%</div>
+              </div>
+          </div>
+      </div>
+      <div class="review-divider"></div>
+      <div class="review-list" id="review-list"></div>
+  </div>
+</div>
+
+<!-- Modal for All Reviews -->
+<div class="modal" id="all-reviews-modal">
+  <div class="modal-content">
+      <div class="modal-header">
+          <h3>All Customer Reviews</h3>
+          <div class="modal-header-actions">
+              <button class="btn btn-icon close-modal" id="close-modal">
+                  <i class="fas fa-times"></i>
+              </button>
+          </div>
+      </div>
+      <div class="modal-filter">
+          <div class="filter-section">
+              <span class="filter-label">Rating:</span>
+              <div class="filter-buttons">
+                  <button class="filter-btn active" data-rating="all">All</button>
+                  <button class="filter-btn" data-rating="5">5 <i class="fas fa-star"></i></button>
+                  <button class="filter-btn" data-rating="4">4 <i class="fas fa-star"></i></button>
+                  <button class="filter-btn" data-rating="3">3 <i class="fas fa-star"></i></button>
+                  <button class="filter-btn" data-rating="2">2 <i class="fas fa-star"></i></button>
+                  <button class="filter-btn" data-rating="1">1 <i class="fas fa-star"></i></button>
+              </div>
+          </div>
+          <div class="filter-section">
+              <span class="filter-label">Sort by:</span>
+              <select id="modal-sort-reviews" class="sort-dropdown">
+                  <option value="recent">Most Recent</option>
+                  <option value="highest">Highest Rated</option>
+                  <option value="lowest">Lowest Rated</option>
+                  <option value="helpful">Most Helpful</option>
+              </select>
+          </div>
+      </div>
+      <div class="modal-body">
+          <div class="full-review-list" id="full-review-list"></div>
+          <div class="no-reviews-message" id="no-reviews-message">
+              No reviews found with the selected rating.
+          </div>
+          <div class="pagination" id="reviews-pagination">
+              <button class="pagination-btn" data-page="prev"><i class="fas fa-chevron-left"></i></button>
+              <div class="pagination-numbers" id="pagination-numbers"></div>
+              <button class="pagination-btn" data-page="next"><i class="fas fa-chevron-right"></i></button>
+          </div>
+      </div>
+  </div>
+</div>
+    </main>
+
+    <!-- Inline JavaScript for fallback -->
+    <script>
+        window.dataLayer = window.dataLayer || [];
+    window.dataLayer.push = function() {
+        console.log('dataLayer.push:', arguments);
+        Array.prototype.push.apply(this, arguments);
+    };
+        document.addEventListener('DOMContentLoaded', () => {
+            const cancelledOrdersCard = document.getElementById('cancelledOrdersCard');
+            const returnRefundOrdersCard = document.getElementById('returnRefundOrdersCard');
+            if (cancelledOrdersCard) {
+                cancelledOrdersCard.addEventListener('click', openCancelledOrdersModal);
+            } else {
+                console.warn('Cancelled orders card not found');
+            }
+            if (returnRefundOrdersCard) {
+                returnRefundOrdersCard.addEventListener('click', openReturnRefundOrdersModal);
+            } else {
+                console.warn('Return/Refund orders card not found');
+            }
+        });
+        
+    </script>
+</body>
+</html>

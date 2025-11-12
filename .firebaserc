@@ -1,0 +1,15 @@
+{
+  "projects": {
+    "default": "comlog-b733f"
+  },
+  "targets": {
+    "comlog-b733f": {
+      "hosting": {
+        "gawangliliw": [
+          "gawangliliw-b733f-1f17b"
+        ]
+      }
+    }
+  },
+  "etags": {}
+}

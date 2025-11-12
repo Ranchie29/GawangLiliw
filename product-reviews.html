@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Product Reviews</title>
+  <link rel="stylesheet" href="product-reviews.css">
+  <link rel="stylesheet" href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css"/>
+  <script type="module" src="product-reviews.js"></script>
+</head>
+<body>
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-profile-picture">
+        <img id="sidebar-profile-picture" src="static/photos/default-profile.png" alt="Profile Picture">
+        <div id="followerCount" style="margin-top: 8px; text-align: center; font-weight: bold; color: #555;">
+          Followers: -
+        </div>
+      </div>
+    </div>
+    <nav>
+      <a href="staff-dashboard.html"><i class='bx bxs-dashboard'></i> Dashboard</a>
+      <div class="menu-item open">
+        <a href="product.html" class="has-submenu active">
+          <i class='bx bx-package'></i> Product
+          <i class='bx bx-chevron-down'></i>
+        </a>
+        <ul class="submenu">
+          <li><a href="product-promo.html"><i class='bx bx-purchase-tag'></i> Product Promo</a></li>
+          <li><a href="product-reviews.html" class="active"><i class='bx bx-star'></i> Product Reviews</a></li>
+        </ul>
+      </div>
+      <a href="transaction.html"><i class='bx bx-money'></i> Transaction</a>
+      <a href="message.html"><i class='bx bx-wallet'></i> Message</a>
+      <a href="account.html"><i class='bx bx-user'></i> Account </a>
+      <a href="index.html" id="logoutButton"><i class='bx bx-log-out'></i> Log Out</a>
+    </nav>
+  </div>
+
+  <!-- Main Body -->
+  <div class="main-content">
+    <div class="container">
+      <div class="page-header">
+        <h1>Product Reviews</h1>
+         <p style="margin: 0.25rem 0 0;">Manage and monitor customer feedback for your products</p>
+      </div>
+
+      <!-- Review Summary -->
+      <div class="review-summary">
+        <div class="summary-card">
+          <div class="summary-header">
+            <h3>Overall Rating</h3>
+          </div>
+          <div class="summary-content">
+            <h2 id="overallRating">0/5.0</h2>
+            <div class="stars" id="overallStars">☆☆☆☆☆</div>
+            <small id="reviewCount">0 reviews</small>
+          </div>
+        </div>
+        
+        <div class="summary-card rating-breakdown">
+          <div class="summary-header">
+            <h3>Rating Breakdown</h3>
+          </div>
+          <div class="breakdown-content">
+            <div class="bar"><span>5★</span><div class="progress"><div class="progress-fill" id="rating5" style="width:0%"></div></div><span id="count5">0</span></div>
+            <div class="bar"><span>4★</span><div class="progress"><div class="progress-fill" id="rating4" style="width:0%"></div></div><span id="count4">0</span></div>
+            <div class="bar"><span>3★</span><div class="progress"><div class="progress-fill" id="rating3" style="width:0%"></div></div><span id="count3">0</span></div>
+            <div class="bar"><span>2★</span><div class="progress"><div class="progress-fill" id="rating2" style="width:0%"></div></div><span id="count2">0</span></div>
+            <div class="bar"><span>1★</span><div class="progress"><div class="progress-fill" id="rating1" style="width:0%"></div></div><span id="count1">0</span></div>
+          </div>
+        </div>
+        
+        <div class="summary-card">
+          <div class="summary-icon">
+            <i class='bx bx-like'></i>
+          </div>
+          <div class="summary-content">
+            <h3>Most Helpful Review</h3>
+            <div class="stars" id="helpfulStars">☆☆☆☆☆</div>
+            <p id="helpfulReview"><b>No reviews available</b></p>
+            <small id="helpfulAuthor">-</small>
+          </div>
+        </div>
+      </div>
+
+      <!-- Reviews Filter -->
+      <div class="reviews-filter">
+        <div class="filter-options">
+          <button class="filter-btn active">All Reviews</button>
+          <button class="filter-btn">5 Stars</button>
+          <button class="filter-btn">4 Stars</button>
+          <button class="filter-btn">3 Stars</button>
+          <button class="filter-btn">2 Stars</button>
+          <button class="filter-btn">1 Star</button>
+        </div>
+        <div class="sort-options">
+          <select id="sortSelect">
+            <option value="newest">Newest First</option>
+            <option value="oldest">Oldest First</option>
+            <option value="highest">Highest Rated</option>
+            <option value="lowest">Lowest Rated</option>
+            <option value="helpful">Most Helpful</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Reviews List -->
+      <div class="reviews" id="reviews">
+        <!-- Reviews will be populated dynamically -->
+        <div class="review-card">
+          <div class="review-header">
+            <div class="avatar">
+              <span></span>
+            </div>
+            <div class="reviewer-info">
+              <h4></h4>
+              <div class="review-meta">
+                <span class="stars"></span>
+                <span class="date"></span>
+              </div>
+            </div>
+          </div>
+          <div class="review-content">
+            <p></p>
+          </div>
+          <div class="review-actions">
+            <button class="action-btn"><i class='bx bx-like'></i> Helpful (12)</button>
+            <button class="action-btn"><i class='bx bx-dislike'></i> Not Helpful (2)</button>
+            <button class="action-btn"><i class='bx bx-flag'></i> Report</button>
+          </div>
+        </div>
+        
+        <div class="review-card">
+          <div class="review-header">
+            <div class="avatar green">
+              <span>SM</span>
+            </div>
+            <div class="reviewer-info">
+              <h4></h4>
+              <div class="review-meta">
+                <span class="stars"></span>
+                <span class="date"></span>
+              </div>
+            </div>
+          </div>
+          <div class="review-content">
+            <p></p>
+          </div>
+          <div class="review-actions">
+            <button class="action-btn"><i class='bx bx-like'></i> Helpful (24)</button>
+            <button class="action-btn"><i class='bx bx-dislike'></i> Not Helpful (1)</button>
+            <button class="action-btn"><i class='bx bx-flag'></i> Report</button>
+          </div>
+        </div>
+        
+        <div class="review-card">
+          <div class="review-header">
+            <div class="avatar red">
+              <span>RJ</span>
+            </div>
+            <div class="reviewer-info">
+              <h4></h4>
+              <div class="review-meta">
+                <span class="stars"></span>
+                <span class="date"></span>
+              </div>
+            </div>
+          </div>
+          <div class="review-content">
+            <p></p>
+          </div>
+          <div class="review-actions">
+            <button class="action-btn"><i class='bx bx-like'></i> Helpful (8)</button>
+            <button class="action-btn"><i class='bx bx-dislike'></i> Not Helpful (5)</button>
+            <button class="action-btn"><i class='bx bx-flag'></i> Report</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Load Buttons -->
+      <div class="load-buttons">
+        <button class="btn btn-outline" id="showLess">Show less</button>
+        <button class="btn btn-primary" id="loadMore">Load more reviews</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Review Modal -->
+  <div class="modal" id="reviewModal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Review Details</h3>
+        <span class="close">&times;</span>
+      </div>
+      <div class="modal-body">
+        <!-- Modal content will be populated dynamically -->
+      </div>
+    </div>
+  </div>
+
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-MFRED6BJX5"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-MFRED6BJX5');
+  </script>
+</body>
+</html>

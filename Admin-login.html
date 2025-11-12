@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login Page</title>
+  <link rel="stylesheet" href="admin.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <script type="module" src="admin-login.js"></script>
+</head>
+<body>
+  <div class="container">
+    <div class="logo-container">
+      <img src="static/photos/logowhite.png" alt="Gawang Liliw Logo" class="logo">
+      <span class="logo-text">Gawang Liliw</span>
+    </div>
+
+    <div class="modal" id="login-modal">
+      <form class="form" id="login-form">
+        <div class="banner"></div>
+        <label class="title">Login</label>
+        <p class="description">Please sign in to continue.</p>
+
+        <div class="group">
+          <label for="email" class="input-label">Email <span class="required-label">*</span></label>
+          <input type="email" id="email" name="email" class="input-login" placeholder="Enter your email" required>
+        </div>
+        <div class="group">
+          <label for="password" class="input-label">Password <span class="required-label">*</span></label>
+          <input type="password" id="password" name="password" class="input-login" placeholder="Enter your password" required>
+          <span class="toggle-password"><i class="fas fa-eye"></i></span>
+        </div>
+
+        <div class="benefits">
+          <label class="remember-me">
+            <input type="checkbox" id="remember-me" name="remember-me"> Remember Me
+          </label>
+        </div>
+
+        <p class="forgot-password">
+          <a href="#" id="forgot-password-link">Forgot Password?</a>
+        </p>
+
+        <p class="forgot-password">
+          Don't have an account? <a href="#" id="open-signup-link">Create Account</a>
+        </p>
+
+        <button type="submit" class="upgrade-btn">Login</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Forgot Password Modal -->
+  <div id="forgot-password-modal" class="modal hidden">
+    <form id="forgot-password-form" class="form">
+      <label class="title">Reset Password</label>
+      <p class="description">Enter your email to receive a reset link.</p>
+      <div class="group">
+        <label for="reset-email" class="input-label">Email <span class="required-label">*</span></label>
+        <input type="email" id="reset-email" name="reset-email" class="input" placeholder="Enter your email" required>
+      </div>
+      <button type="submit" class="upgrade-btn reset-btn">Send Reset Link</button>
+      <button type="button" class="cancel-btn" id="close-modal">Cancel</button>
+    </form>
+  </div>
+
+  <!-- Sign Up Modal -->
+  <div id="signup-modal" class="modal hidden">
+    <form id="signup-form" class="form">
+      <label class="title">Create Account</label>
+      <p class="description">Fill in your details to create an account.</p>
+
+      <div class="group">
+        <label for="signup-shopname" class="input-label">Shop Name <span class="required-label">*</span></label>
+        <input type="text" id="signup-shopname" name="shopname" class="input" placeholder="Enter your shop name" required maxlength="30">
+      </div>
+
+      <div class="group">
+        <label for="signup-username" class="input-label">Username <span class="required-label">*</span></label>
+        <input type="text" id="signup-username" name="username" class="input" placeholder="Enter your username" required maxlength="20">
+      </div>
+
+      <div class="group location-group">
+        <div class="location-field province-field">
+          <label for="signup-province" class="input-label">Province <span class="required-label">*</span></label>
+          <select id="signup-province" name="province" class="input" required>
+            <option value="Laguna" selected>Laguna</option>
+          </select>
+        </div>
+        <div class="location-field city-field">
+          <label for="signup-city" class="input-label">City <span class="required-label">*</span></label>
+          <select id="signup-city" name="city" class="input" required>
+            <option value="Liliw" selected>Liliw</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="group">
+        <label for="signup-barangay" class="input-label">Barangay <span class="required-label">*</span></label>
+        <select id="signup-barangay" name="barangay" class="input" required>
+          <option value="" disabled selected>Select Barangay</option>
+          <option value="Bagong Anyo (Poblacion)">Bagong Anyo (Poblacion)</option>
+          <option value="Bayate">Bayate</option>
+          <option value="Bubukal">Bubukal</option>
+          <option value="Bongkol">Bongkol</option>
+          <option value="Cabuyao">Cabuyao</option>
+          <option value="Calumpang">Calumpang</option>
+          <option value="Culoy">Culoy</option>
+          <option value="Dagatan">Dagatan</option>
+          <option value="Daniw (Danliw)">Daniw (Danliw)</option>
+          <option value="Dita">Dita</option>
+          <option value="Ibabang Palina">Ibabang Palina</option>
+          <option value="Ibabang San Roque">Ibabang San Roque</option>
+          <option value="Ibabang Sungi">Ibabang Sungi</option>
+          <option value="Ibabang Taykin">Ibabang Taykin</option>
+          <option value="Ilayang Palina">Ilayang Palina</option>
+          <option value="Ilayang San Roque">Ilayang San Roque</option>
+          <option value="Ilayang Sungi">Ilayang Sungi</option>
+          <option value="Ilayang Taykin">Ilayang Taykin</option>
+          <option value="Kanlurang Bukal">Kanlurang Bukal</option>
+          <option value="Laguan">Laguan</option>
+          <option value="Rizal (Poblacion)">Rizal (Poblacion)</option>
+          <option value="Luquin">Luquin</option>
+          <option value="Malabo-Kalantukan">Malabo-Kalantukan</option>
+          <option value="Masikap (Poblacion)">Masikap (Poblacion)</option>
+          <option value="Maslun (Poblacion)">Maslun (Poblacion)</option>
+          <option value="Mojon">Mojon</option>
+          <option value="Novaliches">Novaliches</option>
+          <option value="Oples">Oples</option>
+          <option value="Pag-Asa (Poblacion)">Pag-Asa (Poblacion)</option>
+          <option value="Palayan">Palayan</option>
+          <option value="San Isidro">San Isidro</option>
+          <option value="Silangang Bukal">Silangang Bukal</option>
+          <option value="Tuy-Baanan">Tuy-Baanan</option>
+        </select>
+      </div>
+
+      <div class="group">
+        <label for="signup-street" class="input-label">Street/House Number (Optional)</label>
+        <input type="text" id="signup-street" name="street" class="input" placeholder="Enter house number/street (optional)" maxlength="50">
+      </div>
+
+      <div class="group">
+        <label for="signup-phone" class="input-label">Phone Number <span class="required-label">*</span></label>
+        <input type="tel" id="signup-phone" name="phone" class="input" placeholder="Enter your phone number (09XXXXXXXXX)" required maxlength="11" pattern="09[0-9]{9}">
+      </div>
+
+      <div class="group">
+        <label for="signup-email" class="input-label">Email <span class="required-label">*</span></label>
+        <input type="email" id="signup-email" name="email" class="input" placeholder="Enter your email" required maxlength="100">
+      </div>
+
+      <div class="group">
+        <label for="signup-password" class="input-label">Password <span class="required-label">*</span></label>
+        <input type="password" id="signup-password" name="password" class="input" placeholder="Enter your password" required minlength="8" maxlength="20">
+        <span class="signup-toggle-password" data-target="signup-password">
+          <i class="fas fa-eye"></i>
+        </span>
+      </div>
+
+      <div class="group">
+        <label for="signup-confirmpass" class="input-label">Confirm Password <span class="required-label">*</span></label>
+        <input type="password" id="signup-confirmpass" name="confirm-password" class="input" placeholder="Confirm your password" required minlength="8" maxlength="20">
+        <span class="signup-toggle-password" data-target="signup-confirmpass">
+          <i class="fas fa-eye"></i>
+        </span>
+      </div>
+
+      <div class="file-upload-section">
+        <label for="dti-upload" class="file-upload-label">DTI Certificate <span class="required-label">*</span></label>
+        <div class="file-upload-container" id="dti-upload-container">
+          <input type="file" id="dti-upload" name="dti-certificate" class="file-upload-input input" accept="image/png,image/jpeg,image/jpg,application/pdf" required>
+          <div class="upload-icon">
+            <i class="fas fa-cloud-upload-alt"></i>
+          </div>
+          <div>Click to upload</div>
+          <div class="file-upload-text">PNG, JPG, JPEG, PDF up to 5MB</div>
+        </div>
+        <div class="file-preview" id="dti-preview"></div>
+        <div class="file-info" id="dti-info"></div>
+        <div class="error-message" role="alert"></div>
+      </div>
+
+      <div class="file-upload-section">
+        <label for="permit-upload" class="file-upload-label">Mayor's Permit <span class="required-label">*</span></label>
+        <div class="file-upload-container" id="permit-upload-container">
+          <input type="file" id="permit-upload" name="mayors-permit" class="file-upload-input input" accept="image/png,image/jpeg,image/jpg,application/pdf" required>
+          <div class="upload-icon">
+            <i class="fas fa-cloud-upload-alt"></i>
+          </div>
+          <div>Click to upload</div>
+          <div class="file-upload-text">PNG, JPG, JPEG, PDF up to 5MB</div>
+        </div>
+        <div class="file-preview" id="permit-preview"></div>
+        <div class="file-info" id="permit-info"></div>
+        <div class="error-message" role="alert"></div>
+      </div>
+
+      <button type="submit" class="upgrade-btn">Create Account</button>
+      <button type="button" class="cancel-btn" id="close-signup-modal">Cancel</button>
+    </form>
+  </div>
+
+  <div id="loader" class="hidden">
+    <span class="dot"></span>
+    <span class="dot"></span>
+    <span class="dot"></span>
+    <span class="dot"></span>
+    <span class="dot"></span>
+  </div>
+</body>
+</html>

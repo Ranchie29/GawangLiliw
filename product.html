@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Product Management</title>
+  <link rel="stylesheet" href="product.css" />
+  <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <script type="module" src="firebase-config.js"></script>
+  <script type="module" src="product.js"></script>
+  <script type="module" src="firebase-auth.js"></script>
+  <style>
+    .custom-dropdown {
+      position: relative;
+      width: 100%;
+    }
+    .custom-dropdown-toggle {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      background: #fff;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .custom-dropdown-menu {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      background: #fff;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      z-index: 1000;
+      display: none;
+    }
+    .custom-dropdown-menu.show {
+      display: block;
+    }
+    .custom-dropdown-item {
+      padding: 10px;
+      cursor: pointer;
+    }
+    .custom-dropdown-item:hover {
+      background: #f0f0f0;
+    }
+    .custom-category-input {
+      width: 100%;
+      padding: 10px;
+      border: none;
+      border-top: 1px solid #ccc;
+    }
+    .custom-category-input:focus {
+      outline: none;
+    }
+    /* Updated styles for inventory table */
+    
+    .inventory-table th,
+    .inventory-table td {
+      padding: 12px;
+      text-align: left;
+      border-bottom: 1px solid #eee;
+    }
+    .inventory-table th {
+      background: #a9cce3;
+      font-weight: 600;
+      color: #333;
+    }
+    .inventory-table tbody tr:hover {
+      background: #f9f9f9;
+    }
+    .stock-badge {
+      padding: 4px 8px;
+      border-radius: 12px;
+      font-size: 0.9em;
+    }
+    .stock-low { background: #fee2e2; color: #b91c1c; }
+    .stock-medium { background: #fef3c7; color: #d97706; }
+    .stock-high { background: #d1fae5; color: #059669; }
+    .size-stock-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .size-stock-item {
+      display: inline-flex;
+      align-items: center;
+      padding: 4px 8px;
+      border-radius: 6px;
+      background: #f0f0f0;
+      font-size: 0.85em;
+    }
+    .size-stock-item.low-stock {
+      background: #fee2e2;
+      color: #b91c1c;
+    }
+    .size-stock-item span {
+      margin-right: 4px;
+    }
+    
+    .action-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 4px;
+    }
+    .action-btn:hover .material-icons {
+      color: #007bff;
+    }
+    .hidden-bullets {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    /* Updated styles for variant grid in modal */
+    .variant-table-container {
+      max-height: 300px;
+      overflow-y: auto;
+      border: 1px solid #eee;
+      border-radius: 4px;
+      margin-top: 10px;
+    }
+    #variantGrid {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    #variantGrid th, #variantGrid td {
+      padding: 10px;
+      text-align: left;
+      border-bottom: 1px solid #eee;
+    }
+    #variantGrid th {
+      background: #f8f9fa;
+      font-weight: 600;
+    }
+    #variantGrid tbody tr:hover {
+      background: #f9f9f9;
+    }
+    #variantGrid .color-header {
+      background: #e9ecef;
+      font-weight: 500;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px;
+    }
+    #variantGrid .color-header:hover {
+      background: #dee2e6;
+    }
+    #variantGrid .size-row.hidden {
+      display: none;
+    }
+    #variantGrid input[type="number"] {
+      width: 60px;
+      padding: 5px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      font-size: 0.9em;
+    }
+    #variantGrid input[type="number"]:focus {
+      outline: none;
+      border-color: #007bff;
+      box-shadow: 0 0 3px rgba(0, 123, 255, 0.3);
+    }
+    .variant-table-container .no-variants {
+      text-align: center;
+      padding: 20px;
+      color: #666;
+    }
+  </style>
+</head>
+<body>
+  <!-- Mobile Navigation Toggle -->
+  <button class="nav-toggle" aria-label="Toggle navigation">
+    <i class="bx bx-menu"></i>
+  </button>
+
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-profile-picture">
+        <img id="sidebar-profile-picture" src="static/photos/default-profile.png">
+        <div id="followerCount" style="margin-top: 8px; text-align: center; font-weight: bold; color: #555;">
+          Followers: -
+        </div>
+      </div>
+    </div>
+    <nav>
+      <a href="staff-dashboard.html"><i class='bx bxs-dashboard'></i> Dashboard</a>
+
+      <div class="menu-item">
+        <a href="product.html" class="has-submenu, active">
+          <i class='bx bx-package'></i> Product
+          <i class='bx bx-chevron-down'></i>
+        </a>
+        <ul class="submenu">
+          <li><a href="product-promo.html"><i class='bx bx-purchase-tag'></i> Product Promo</a></li>
+          <li><a href="product-reviews.html"><i class='bx bx-star'></i> Product Reviews</a></li>
+        </ul>
+      </div>
+      
+      <a href="transaction.html"><i class='bx bx-money'></i> Transaction</a>
+      <a href="message.html"><i class='bx bx-wallet'></i> Message</a>
+      <a href="account.html"><i class='bx bx-user'></i> Account </a>
+      <a href="index.html" id="logoutButton"><i class='bx bx-log-out'></i> Log Out</a>
+      
+    </nav>
+  </div>
+
+  <main>
+    <header class="top-bar">
+      <h1>Product Management</h1>
+    </header>
+
+    <div class="container">
+      <!-- Tabs -->
+      <div class="tabs">
+        <button class="tab-btn active" data-view="product">Product Items</button>
+        <button class="tab-btn" data-view="inventory">Inventory Management</button>
+      </div>
+
+      <!-- Add Product Modal -->
+      <div id="addProductModal" class="modal">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h2><i class="fas fa-box-open"></i> Add New Product</h2>
+            <button class="close-btn" id="closeModal">×</button>
+          </div>            
+          <form id="uploadProductForm">
+            <div class="form-grid">
+              <div class="form-group">
+                <label for="productName">Product Name</label>
+                <input type="text" id="productName" placeholder="Enter product name" required maxlength="100"/>
+              </div>
+              <div class="form-group">
+                <label for="productPrice">Price</label>
+                <input type="number" id="productPrice" placeholder="Enter price" required min="0"/>
+              </div>
+              <div class="form-group">
+                <label for="orderLimit">Order Limit per Buyer</label>
+                <input type="number" id="orderLimit" placeholder="Enter max quantity per buyer" min="1" required />
+              </div>
+              <div class="form-group full-width">
+                <label for="productDescription">Description</label>
+                <textarea id="productDescription" placeholder="Enter product description" required maxlength="500"></textarea>
+              </div>
+              <div class="form-group">
+                <label for="productCategory">Category</label>
+                <div class="custom-dropdown">
+                  <input type="hidden" id="productCategory" name="productCategory" required />
+                  <div class="custom-dropdown-toggle" id="dropdownToggle">
+                    <span id="selectedCategory">Select a category</span>
+                    <i class="bx bx-chevron-down"></i>
+                  </div>
+                  <div class="custom-dropdown-menu" id="dropdownMenu">
+                    <div class="custom-dropdown-item" data-value="">Select a category</div>
+                    <div class="custom-dropdown-item" data-value="leather">Leather</div>
+                    <div class="custom-dropdown-item" data-value="sandals">Sandals</div>
+                    <div class="custom-dropdown-item" data-value="abaca">Abaca</div>
+                    <input type="text" class="custom-category-input" id="customCategoryInput" placeholder="Enter new category" />
+                  </div>
+                </div>
+              </div>
+              <div class="form-group">
+                <label>Gender</label>
+                <div class="gender-options">
+                  <label class="gender-option">
+                    <input type="radio" name="gender" value="men" required />
+                    <span><i class="bx bx-male"></i> Men</span>
+                  </label>
+                  <label class="gender-option">
+                    <input type="radio" name="gender" value="women" />
+                    <span><i class="bx bx-female"></i> Women</span>
+                  </label>
+                  <label class="gender-option">
+                    <input type="radio" name="gender" value="unisex" />
+                    <span><i class="bx bx-male-female"></i> Unisex</span>
+                  </label>
+                </div>
+              </div>
+              <div class="form-group full-width">
+                <label>Colors</label>
+                <div class="tag-input-container">
+                  <input type="text" id="colorInput" placeholder="Enter color (e.g., Blue)" />
+                  <button type="button" id="addColorBtn" class="add-tag-btn">Add Color</button>
+                </div>
+                <div id="colorTags" class="tag-container"></div>
+              </div>
+              <div class="form-group full-width">
+                <label>Sizes</label>
+                <div class="tags-input-container">
+                  <input type="number" id="sizeInput" placeholder="Add a size and press Enter" min="0" />
+                  <div id="sizeTags" class="tags-container"></div>
+                </div>
+              </div>
+              <div class="form-group full-width">
+                <label style="display:block; margin-bottom:8px; font-weight:500;">Generated Variants</label>
+                <div class="variant-table-container">
+                  <table id="variantGrid">
+                    <thead>
+                      <tr>
+                        <th>Color</th>
+                        <th>Size</th>
+                        <th>Quantity</th>
+                      </tr>
+                    </thead>
+                    <tbody></tbody>
+                  </table>
+                </div>
+              </div>
+              <div class="form-group">
+                <label>Product Images (max 10)</label>
+                <div class="file-upload-wrapper">
+                  <input type="file" id="productImage" accept="image/jpeg,image/png,image/gif" multiple>
+                  <label for="productImage" class="file-upload-label">
+                    <i class="bx bx-cloud-upload"></i>
+                    <span class="file-label-text">Choose up to 10 images...</span>
+                  </label>
+                  <div id="previewContainer" class="preview-container"></div>
+                </div>
+              </div>
+              <div class="form-group full-width">
+                <button type="submit" class="submit-button">
+                  <i class="bx bx-upload"></i> Upload Product
+                </button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- Product Management View -->
+      <div class="view product-view active">
+        <div class="inventory-header">
+          <div class="left-section">
+            <div class="filters">
+              <div class="filter-group">
+                <label for="filterCategory">Category:</label>
+                <div class="custom-dropdown">
+                  <input type="hidden" id="filterCategory" name="filterCategory" />
+                  <div class="custom-dropdown-toggle" id="filterDropdownToggle">
+                    <span id="selectedFilterCategory">All Categories</span>
+                    <i class="bx bx-chevron-down"></i>
+                  </div>
+                  <div class="custom-dropdown-menu" id="filterDropdownMenu">
+                    <div class="custom-dropdown-item" data-value="all">All Categories</div>
+                    <div class="custom-dropdown-item" data-value="leather">Leather</div>
+                    <div class="custom-dropdown-item" data-value="sandals">Sandals</div>
+                    <div class="custom-dropdown-item" data-value="abaca">Abaca</div>
+                    <input type="text" class="custom-category-input" id="filterCustomCategoryInput" placeholder="Enter new category" />
+                  </div>
+                </div>
+              </div>
+              <div class="filter-group">
+                <label for="filterGender">Gender:</label>
+                <select id="filterGender">
+                  <option value="all">All</option>
+                  <option value="men">Men</option>
+                  <option value="women">Women</option>
+                  <option value="unisex">Unisex</option>
+                </select>
+              </div>
+              <div class="filter-group">
+                <div class="size-option-group">
+                  <label for="size-options" class="size-option-label">Size Options:</label>
+                </div>
+                <select id="filterStock">
+                  <option value="all">All</option>
+                  <option value="low">Low</option>
+                  <option value="in">In Stock</option>
+                  <option value="out">Out of Stock</option>
+                </select>
+              </div>
+              <div class="filter-group">
+                <label for="filterSort">Sort By:</label>
+                <select id="filterSort">
+                  <option value="name-asc">Name (A–Z)</option>
+                  <option value="name-desc">Name (Z–A)</option>
+                  <option value="stock-asc">Stock (Low to High)</option>
+                  <option value="stock-desc">Stock (High to Low)</option>
+                  <option value="newest">Newest First</option>
+                </select>
+              </div>
+            </div>
+          </div>
+          <div class="right-section">
+            <button class="btn primary" id="addProductButton">
+              <i class="bx bx-plus"></i> Add New Product
+            </button>
+          </div>
+        </div>
+        <div class="product-grid">
+          <!-- Product cards go here -->
+        </div>
+        <div class="pagination">
+          <button class="page-btn prev"><i class="bx bx-chevron-left"></i></button>
+          <button class="page-btn active">1</button>
+          <button class="page-btn">2</button>
+          <button class="page-btn">3</button>
+          <span>...</span>
+          <button class="page-btn">10</button>
+          <button class="page-btn next"><i class="bx bx-chevron-right"></i></button>
+        </div>
+      </div>
+
+      <!-- Inventory Management View -->
+      <div class="view inventory-view">
+        <div class="header">
+        </div>
+        <div class="inventory-table-container">
+          <table class="inventory-table">
+            <thead>
+              <tr>
+                <th><input type="checkbox" id="select-all" /></th>
+                <th>Product Name</th>
+                <th>Category</th>
+                <th>Variants (Color, Size, Stock)</th>
+                <th>Overall Stock</th>
+                <th>Last Updated</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              <!-- Inventory data here -->
+            </tbody>
+          </table>
+        </div>
+        <div class="pagination" id="inventoryPaginationTop"></div>
+        <div class="table-footer">
+          <div class="selection-info">0 items selected</div>
+          <div class="bulk-actions">
+            <button class="btn secondary"><i class="bx bx-trash"></i> Delete</button>
+          </div>
+        </div>
+      </div>
+
+      <div id="loader" class="hidden">
+        <span class="dot"></span>
+        <span class="dot"></span>
+        <span class="dot"></span>
+        <span class="dot"></span>
+        <span class="dot"></span>
+      </div>
+    </main>
+
+    <script>
+      document.querySelectorAll(".tab-btn").forEach(button => {
+        button.addEventListener("click", () => {
+          const view = button.getAttribute("data-view");
+          document.querySelectorAll(".tab-btn").forEach(btn => btn.classList.remove("active"));
+          document.querySelectorAll(".view").forEach(viewDiv => viewDiv.classList.remove("active"));
+          button.classList.add("active");
+          document.querySelector(`.${view}-view`).classList.add("active");
+        });
+      });
+
+      // Mobile navigation toggle
+      const navToggle = document.querySelector('.nav-toggle');
+      const sidebar = document.querySelector('.sidebar');
+      navToggle.addEventListener('click', () => {
+        sidebar.classList.toggle('show');
+        navToggle.innerHTML = sidebar.classList.contains('show') 
+          ? '<i class="bx bx-x"></i>' 
+          : '<i class="bx bx-menu"></i>';
+      });
+
+      // Close sidebar when clicking outside on mobile
+      document.addEventListener('click', (e) => {
+        if (window.innerWidth <= 992 && 
+            !sidebar.contains(e.target) && 
+            !navToggle.contains(e.target) && 
+            sidebar.classList.contains('show')) {
+          sidebar.classList.remove('show');
+          navToggle.innerHTML = '<i class="bx bx-menu"></i>';
+        }
+      });
+
+      // Custom dropdown functionality for productCategory
+      const dropdownToggle = document.getElementById('dropdownToggle');
+      const dropdownMenu = document.getElementById('dropdownMenu');
+      const selectedCategory = document.getElementById('selectedCategory');
+      const productCategoryInput = document.getElementById('productCategory');
+      const customCategoryInput = document.getElementById('customCategoryInput');
+
+      dropdownToggle?.addEventListener('click', () => {
+        dropdownMenu.classList.toggle('show');
+      });
+
+      document.querySelectorAll('#dropdownMenu .custom-dropdown-item').forEach(item => {
+        item.addEventListener('click', () => {
+          const value = item.getAttribute('data-value');
+          selectedCategory.textContent = value === '' ? 'Select a category' : item.textContent;
+          productCategoryInput.value = value;
+          dropdownMenu.classList.remove('show');
+        });
+      });
+
+      customCategoryInput?.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          const customValue = customCategoryInput.value.trim();
+          if (customValue) {
+            selectedCategory.textContent = customValue;
+            productCategoryInput.value = customValue.toLowerCase();
+            dropdownMenu.classList.remove('show');
+            customCategoryInput.value = '';
+            // Add the new category to the dropdown
+            const newItem = document.createElement('div');
+            newItem.className = 'custom-dropdown-item';
+            newItem.setAttribute('data-value', customValue.toLowerCase());
+            newItem.textContent = customValue;
+            newItem.addEventListener('click', () => {
+              selectedCategory.textContent = customValue;
+              productCategoryInput.value = customValue.toLowerCase();
+              dropdownMenu.classList.remove('show');
+            });
+            dropdownMenu.insertBefore(newItem, customCategoryInput);
+            // Also add to filter dropdown
+            const filterDropdownMenu = document.getElementById('filterDropdownMenu');
+            const filterNewItem = document.createElement('div');
+            filterNewItem.className = 'custom-dropdown-item';
+            filterNewItem.setAttribute('data-value', customValue.toLowerCase());
+            filterNewItem.textContent = customValue;
+            filterNewItem.addEventListener('click', () => {
+              const filterSelectedCategory = document.getElementById('selectedFilterCategory');
+              const filterCategoryInput = document.getElementById('filterCategory');
+              filterSelectedCategory.textContent = customValue;
+              filterCategoryInput.value = customValue.toLowerCase();
+              filterDropdownMenu.classList.remove('show');
+            });
+            filterDropdownMenu.insertBefore(filterNewItem, document.getElementById('filterCustomCategoryInput'));
+          }
+        }
+      });
+
+      // Close productCategory dropdown when clicking outside
+      document.addEventListener('click', (e) => {
+        if (!dropdownToggle.contains(e.target) && !dropdownMenu.contains(e.target)) {
+          dropdownMenu.classList.remove('show');
+        }
+      });
+
+      // Custom dropdown functionality for filterCategory
+      const filterDropdownToggle = document.getElementById('filterDropdownToggle');
+      const filterDropdownMenu = document.getElementById('filterDropdownMenu');
+      const selectedFilterCategory = document.getElementById('selectedFilterCategory');
+      const filterCategoryInput = document.getElementById('filterCategory');
+      const filterCustomCategoryInput = document.getElementById('filterCustomCategoryInput');
+
+      filterDropdownToggle?.addEventListener('click', () => {
+        filterDropdownMenu.classList.toggle('show');
+      });
+
+      document.querySelectorAll('#filterDropdownMenu .custom-dropdown-item').forEach(item => {
+        item.addEventListener('click', () => {
+          const value = item.getAttribute('data-value');
+          selectedFilterCategory.textContent = value === 'all' ? 'All Categories' : item.textContent;
+          filterCategoryInput.value = value;
+          filterDropdownMenu.classList.remove('show');
+        });
+      });
+
+      filterCustomCategoryInput?.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          const customValue = filterCustomCategoryInput.value.trim();
+          if (customValue) {
+            selectedFilterCategory.textContent = customValue;
+            filterCategoryInput.value = customValue.toLowerCase();
+            filterDropdownMenu.classList.remove('show');
+            filterCustomCategoryInput.value = '';
+            // Add the new category to the filter dropdown
+            const newItem = document.createElement('div');
+            newItem.className = 'custom-dropdown-item';
+            newItem.setAttribute('data-value', customValue.toLowerCase());
+            newItem.textContent = customValue;
+            newItem.addEventListener('click', () => {
+              selectedFilterCategory.textContent = customValue;
+              filterCategoryInput.value = customValue.toLowerCase();
+              filterDropdownMenu.classList.remove('show');
+            });
+            filterDropdownMenu.insertBefore(newItem, filterCustomCategoryInput);
+            // Also add to productCategory dropdown
+            const productDropdownMenu = document.getElementById('dropdownMenu');
+            const productNewItem = document.createElement('div');
+            productNewItem.className = 'custom-dropdown-item';
+            productNewItem.setAttribute('data-value', customValue.toLowerCase());
+            productNewItem.textContent = customValue;
+            productNewItem.addEventListener('click', () => {
+              selectedCategory.textContent = customValue;
+              productCategoryInput.value = customValue.toLowerCase();
+              productDropdownMenu.classList.remove('show');
+            });
+            productDropdownMenu.insertBefore(productNewItem, customCategoryInput);
+          }
+        }
+      });
+
+      // Close filterCategory dropdown when clicking outside
+      document.addEventListener('click', (e) => {
+        if (!filterDropdownToggle.contains(e.target) && !filterDropdownMenu.contains(e.target)) {
+          filterDropdownMenu.classList.remove('show');
+        }
+      });
+
+      // Toggle variant rows in modal
+      window.toggleVariantRow = function (button) {
+        const colorRow = button.closest('.color-header');
+        const color = colorRow.dataset.color;
+        const sizeRows = document.querySelectorAll(`#variantGrid .size-row[data-color="${color}"]`);
+        const isHidden = sizeRows[0]?.classList.contains('hidden');
+        sizeRows.forEach(row => row.classList.toggle('hidden', !isHidden));
+        button.innerHTML = isHidden ? '<i class="bx bx-chevron-up"></i>' : '<i class="bx bx-chevron-down"></i>';
+      };
+    </script>
+</body>
+</html>

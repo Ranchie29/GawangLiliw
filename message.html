@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Message | Gawang Liliw</title>
+  <link rel="stylesheet" href="message.css">
+  <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script type="module" src="firebase-config.js"></script>
+  <script type="module" src="firebase-auth.js"></script>
+  <script type="module" src="message.js"></script>
+  <style>
+    /* Mobile Menu Toggle */
+    .mobile-menu-toggle {
+      display: none;
+      position: fixed;
+      top: 1rem;
+      left: 1rem;
+      z-index: 1100;
+      background: white;
+      color: black;
+      border: none;
+      padding: 0.75rem;
+      border-radius: 0.5rem;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+    .mobile-menu-toggle:hover {
+      background: var(--primary-color);
+      color: white;
+    }
+    .mobile-menu-toggle svg {
+      width: 24px;
+      height: 24px;
+    }
+    /* Sidebar */
+    .sidebar {
+      width: 280px;
+      background: #ffffff;
+      border-right: 1px solid rgba(14, 165, 233, 0.1);
+      display: flex;
+      flex-direction: column;
+      position: fixed;
+      height: 100vh;
+      box-shadow: 2px 0 8px rgba(14, 165, 233, 0.05);
+      transition: transform 0.3s ease;
+      z-index: 1000;
+    }
+    /* Main Content */
+    main {
+      flex: 1;
+      margin-left: 280px;
+      padding: 1.5rem;
+      width: calc(100% - 280px);
+      transition: margin-left 0.3s ease, width 0.3s ease;
+      z-index: 50;
+    }
+    /* Sidebar adjustments for mobile */
+    @media (max-width: 768px) {
+      .sidebar {
+        transform: translateX(-100%);
+        width: 280px;
+        z-index: 1050;
+        position: fixed;
+        top: 0;
+        bottom: 0;
+        transition: transform 0.3s ease;
+      }
+      .sidebar.active {
+        transform: translateX(0);
+      }
+      main {
+        margin-left: 0;
+        padding: 1rem;
+        width: 100%;
+        transition: margin-left 0.3s ease;
+      }
+      .mobile-menu-toggle {
+        display: block;
+      }
+      .overlay {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 1000;
+      }
+      .overlay.active {
+        display: block;
+      }
+      .app-container {
+        flex-direction: column;
+        height: auto;
+        min-height: 80vh;
+        max-width: 100%;
+      }
+      .inbox-container {
+        width: 100%;
+        height: auto;
+        min-height: 40vh;
+        border-right: none;
+        border-bottom: 1px solid var(--divider-color);
+      }
+      .message-detail-container {
+        width: 100%;
+        height: auto;
+        min-height: 40vh;
+      }
+    }
+    /* Close button for mobile sidebar */
+    .sidebar-close {
+      display: none;
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      background: none;
+      border: none;
+      color: #666;
+      font-size: 1.5rem;
+      cursor: pointer;
+    }
+    @media (max-width: 768px) {
+      .sidebar-close {
+        display: block;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Mobile Menu Toggle -->
+  <button class="mobile-menu-toggle" aria-label="Toggle Menu">
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </button>
+
+  <!-- Overlay for mobile menu -->
+  <div class="overlay"></div>
+
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <button class="sidebar-close" aria-label="Close Menu">
+      <i class="fas fa-times"></i>
+    </button>
+    <div class="sidebar-header">
+      <h2>Welcome back, <br><span id="userName">User</span>!</h2>
+      <div class="sidebar-profile-picture">
+        <img id="sidebar-profile-picture" src="static/photos/default-profile.png">
+        <div id="followerCount" style="margin-top: 8px; text-align: center; font-weight: bold; color: #555;">
+          Followers: -
+        </div>
+      </div>
+    </div>
+    <nav>
+      <a href="staff-dashboard.html"><i class='bx bxs-dashboard'></i> Dashboard</a>
+      <div class="menu-item">
+        <a href="product.html" class="has-submenu">
+          <i class='bx bx-package'></i> Product
+          <i class='bx bx-chevron-down'></i>
+        </a>
+      </div>
+      <a href="transaction.html"><i class='bx bx-money'></i> Transaction</a>
+      <a href="#" class="active"><i class='bx bx-message'></i> Message</a>
+      <a href="account.html"><i class='bx bx-user'></i> Account</a>
+      <a href="Admin-login.html" id="logoutButton"><i class='bx bx-log-out'></i> Log Out</a>
+    </nav>
+  </div>
+
+  <!-- Main -->
+  <main>
+    <header class="top-bar" style="display: flex; justify-content: space-between; align-items: center;">
+      <h1>Message Management</h1>
+    </header>
+
+    <div class="app-container">
+      <!-- Inbox -->
+      <div class="inbox-container">
+        <div class="inbox-header">
+          <h1>Inbox</h1>
+          <div class="inbox-actions">
+            <button class="btn-icon refresh-btn" title="Refresh">
+              <i class="fas fa-sync-alt"></i>
+            </button>
+            <div class="search-container">
+              <i class="fas fa-search"></i>
+              <input type="text" placeholder="Search emails...">
+            </div>
+          </div>
+        </div>
+        <div class="filter-tabs">
+          <button class="tab-btn active" data-filter="all">All</button>
+          <button class="tab-btn" data-filter="unread">Unread</button>
+        </div>
+        <div class="inbox-stats">
+          <span class="message-count">0 messages</span>
+          <span class="unread-count">0 unread</span>
+        </div>
+        <div class="message-list">
+          <!-- Messages inserted dynamically -->
+        </div>
+      </div>
+
+      <!-- Message Details -->
+      <div class="message-detail-container">
+        <div class="message-detail-header">
+          <h2>Message Details</h2>
+          <div class="detail-actions d-flex align-items-center gap-2">
+            
+            <div class="dropdown">
+              <button class="btn btn-icon" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false" title="More options">
+                <i class="fas fa-ellipsis-v"></i>
+              </button>
+              <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownMenuButton">
+                <li><a class="dropdown-item" href="#" onclick="deleteMessage(window.selectedMessageId)">Delete</a></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+        <div class="message-detail-content">
+          <div class="message-placeholder">
+            <i class="far fa-envelope"></i>
+            <p>Select a message to view details</p>
+          </div>
+          <div class="message-content hidden">
+            <!-- Message details inserted dynamically -->
+          </div>
+          <div id="replyBox" style="display:none; margin-top: 20px;">
+            <div id="imagePreview" class="image-preview"></div>
+            <textarea id="replyText" rows="4" class="form-control" placeholder="Type your reply..."></textarea>
+            <label for="imageInput" title="Attach image">📎</label>
+            <input type="file" id="imageInput" accept="image/*" multiple />
+            <button class="reply-send-btn" onclick="sendReply()">Send</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const mobileMenuToggle = document.querySelector('.mobile-menu-toggle');
+      const sidebar = document.querySelector('.sidebar');
+      const overlay = document.querySelector('.overlay');
+      const sidebarClose = document.querySelector('.sidebar-close');
+      const mainContent = document.querySelector('main');
+      const inboxContainer = document.querySelector('.inbox-container');
+      const messageDetailContainer = document.querySelector('.message-detail-container');
+
+      if (mobileMenuToggle && sidebar && overlay && sidebarClose && mainContent && inboxContainer && messageDetailContainer) {
+        mobileMenuToggle.addEventListener('click', () => {
+          sidebar.classList.toggle('active');
+          overlay.classList.toggle('active');
+          mainContent.style.marginLeft = sidebar.classList.contains('active') ? '280px' : '0';
+        });
+
+        sidebarClose.addEventListener('click', () => {
+          sidebar.classList.remove('active');
+          overlay.classList.remove('active');
+          mainContent.style.marginLeft = '0';
+        });
+
+        overlay.addEventListener('click', () => {
+          sidebar.classList.remove('active');
+          overlay.classList.remove('active');
+          mainContent.style.marginLeft = '0';
+        });
+
+        sidebar.querySelectorAll('nav a').forEach(link => {
+          link.addEventListener('click', () => {
+            if (window.innerWidth <= 768) {
+              sidebar.classList.remove('active');
+              overlay.classList.remove('active');
+              mainContent.style.marginLeft = '0';
+            }
+          });
+        });
+
+        function updateLayout() {
+          if (window.innerWidth > 768) {
+            sidebar.classList.remove('active');
+            overlay.classList.remove('active');
+            mainContent.style.marginLeft = '280px';
+            mainContent.style.width = 'calc(100% - 280px)';
+            inboxContainer.style.display = 'flex';
+            messageDetailContainer.style.display = 'flex';
+          } else {
+            sidebar.classList.remove('active');
+            overlay.classList.remove('active');
+            mainContent.style.marginLeft = '0';
+            mainContent.style.width = '100%';
+            if (window.selectedMessageId) {
+              inboxContainer.style.display = 'none';
+              messageDetailContainer.style.display = 'flex';
+            } else {
+              inboxContainer.style.display = 'flex';
+              messageDetailContainer.style.display = 'none';
+            }
+          }
+        }
+
+        updateLayout();
+
+        let resizeTimeout;
+        window.addEventListener('resize', () => {
+          clearTimeout(resizeTimeout);
+          resizeTimeout = setTimeout(updateLayout, 100);
+        });
+      }
+    });
+
+    function toggleReplyBox() {
+      const replyBox = document.getElementById('replyBox');
+      if (replyBox.style.display === "none") {
+        replyBox.style.display = "block";
+        console.log("Toggling reply box to visible, re-attaching image preview listener");
+        window.attachImagePreviewListener();
+      } else {
+        replyBox.style.display = "none";
+      }
+    }
+  </script>
+</body>
+</html>
